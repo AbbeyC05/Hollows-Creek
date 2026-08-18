@@ -6,12 +6,32 @@
 <title>Hollow's Creek</title>
 <script>
 fetch('site-base.html')
-  .then(r => r.text())
+  .then(r => {
+    if (!r.ok) throw new Error('Could not load site-base.html');
+    return r.text();
+  })
   .then(html => {
-    html = html.replace('</body>', '<script src="site-patches.js"><\\/script></body>');
     document.open();
     document.write(html);
     document.close();
+
+    const loadPatches = () => {
+      const script = document.createElement('script');
+      script.src = 'site-patches.js?v=2';
+      script.onload = () => console.log('Hollow\'s Creek profile patches loaded');
+      script.onerror = () => console.error('Could not load site-patches.js');
+      document.body.appendChild(script);
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadPatches, { once: true });
+    } else {
+      loadPatches();
+    }
+  })
+  .catch(err => {
+    document.body.innerHTML = '<p style="padding:30px;font-family:Arial">The Hollow\'s Creek archive could not load. Please refresh the page.</p>';
+    console.error(err);
   });
 </script>
 </head>
