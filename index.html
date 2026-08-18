@@ -115,6 +115,10 @@ function showFamily(name) {
   showPage('familyProfile');
 }
 function showResident(name) {
+  if (name === 'Joanne Rose Reid' || name === 'Joanne Reid') {
+    showPage('joanneProfile');
+    return;
+  }
   if (name === 'Rebecca Rose Beaumont') {
     showPage('beccaProfile');
     return;
@@ -297,7 +301,8 @@ window.addEventListener("DOMContentLoaded", wireBeaumontCrossLinks);
     <div class="az"><a href="#res-b">B</a></div>
     <section class="letter-group" id="res-b">
       <div class="letter">B</div>
-      <div class="resident-list"><button class="resident-row" onclick="showResident('Bethany Alana Beaumont')"><span>Bethany Alana Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Bradley Marcus Beaumont')"><span>Bradley Marcus Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Celia Isabella Beaumont')"><span>Celia Isabella Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Charlie Steven Beaumont')"><span>Charlie Steven Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Harper Victoria Beaumont')"><span>Harper Victoria Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Henry Luke Beaumont')"><span>Henry Luke Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Leon Alex Beaumont')"><span>Leon Alex Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Libby Christine Beaumont')"><span>Libby Christine Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Lukas Henry Beaumont')"><span>Lukas Henry Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Melissa Mary Beaumont')"><span>Melissa Mary Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Rebecca Rose Beaumont')"><span>Rebecca Rose Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Reece Ethan Beaumont')"><span>Reece Ethan Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Riley Faith Beaumont')"><span>Riley Faith Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Lukas Henry Beaumont Jr')"><span>Lukas Henry Beaumont Jr</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Rosa Beaumont (née Smith)')"><span>Rosa Beaumont (née Smith)</span><small>Profile available →</small></button></div>
+      <div class="resident-list">
+      <button class="resident-row" onclick="showResident('Joanne Rose Reid')"><span>Joanne Rose Reid</span><small>Reid Family</small></button><button class="resident-row" onclick="showResident('Bethany Alana Beaumont')"><span>Bethany Alana Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Bradley Marcus Beaumont')"><span>Bradley Marcus Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Celia Isabella Beaumont')"><span>Celia Isabella Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Charlie Steven Beaumont')"><span>Charlie Steven Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Harper Victoria Beaumont')"><span>Harper Victoria Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Henry Luke Beaumont')"><span>Henry Luke Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Leon Alex Beaumont')"><span>Leon Alex Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Libby Christine Beaumont')"><span>Libby Christine Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Lukas Henry Beaumont')"><span>Lukas Henry Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Melissa Mary Beaumont')"><span>Melissa Mary Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Rebecca Rose Beaumont')"><span>Rebecca Rose Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Reece Ethan Beaumont')"><span>Reece Ethan Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Riley Faith Beaumont')"><span>Riley Faith Beaumont</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Lukas Henry Beaumont Jr')"><span>Lukas Henry Beaumont Jr</span><small>Profile available →</small></button><button class="resident-row" onclick="showResident('Rosa Beaumont (née Smith)')"><span>Rosa Beaumont (née Smith)</span><small>Profile available →</small></button></div>
     </section>
   </main>
   <footer>HOLLOW'S CREEK • RESIDENT DIRECTORY</footer>
@@ -1191,7 +1196,7 @@ window.addEventListener("DOMContentLoaded", wireBeaumontCrossLinks);
     </div>
 
     <section class="profile-section"><h3>Family</h3><div class="chips"><span class="chip">Ethan Beaumont — father</span><span class="chip">Carla Beaumont (née Alavrez) — mother</span><span class="chip">Alex Beaumont — brother</span><span class="chip">Alana Diaz (née Beaumont) — sister</span><span class="chip">Soya Beaumont (née Lopez) — sister-in-law</span><span class="chip">Jacob Diaz — brother-in-law</span><span class="chip">Alejandro Smith — father-in-law</span><span class="chip">Isabella Smith (née Torres) — mother-in-law</span><span class="chip">Javier Smith — brother-in-law</span><span class="chip">Camila Smith (née Reyes) — sister-in-law</span><span class="chip">Mary Snape (née Smith) — sister-in-law</span><span class="chip">Severus Snape — brother-in-law</span></div></section>
-    <section class="profile-section"><h3>Relationships</h3><div class="chips"><span class="chip">Jewel Lewandowski — ex-wife</span><span class="chip">Joanne Reid — ex-girlfriend</span><span class="chip">Michelle Solis — affair</span><span class="chip">Rosa Beaumont (née Smith) — wife</span></div></section>
+    <section class="profile-section"><h3>Relationships</h3><div class="chips"><span class="chip">Jewel Lewandowski — ex-wife</span><span class="chip person-link" onclick="showResident('Joanne Rose Reid')">Joanne Reid — ex-girlfriend</span><span class="chip">Michelle Solis — affair</span><span class="chip">Rosa Beaumont (née Smith) — wife</span></div></section>
     <section class="profile-section"><h3>Children</h3><div class="chips"><span class="chip">Lukas Beaumont Jr — son</span><span class="chip">Charlie Beaumont — son</span><span class="chip">Libby Beaumont — daughter</span><span class="chip">Bethany Beaumont — daughter</span><span class="chip">Reece Beaumont — son</span><span class="chip">Leon Beaumont — son</span><span class="chip">Bradley Beaumont — son</span><span class="chip">Rebecca Beaumont — daughter</span><span class="chip">Harper Beaumont — daughter</span><span class="chip">Melissa Beaumont — daughter</span><span class="chip">Celia Beaumont — daughter</span><span class="chip">Henry Beaumont — son</span><span class="chip">Riley Beaumont — daughter</span></div></section>
     <section class="profile-section"><h3>Extended Family</h3><div class="chips"><span class="chip">Jim Beaumont — nephew</span><span class="chip">Rene Beaumont — niece</span><span class="chip">Luke Beaumont — nephew</span><span class="chip">Jack Beaumont — nephew</span><span class="chip">Xander Diaz — nephew</span><span class="chip">Daniella Diaz — niece</span><span class="chip">Zayn Diaz — nephew</span><span class="chip">Gabriella Diaz — niece</span><span class="chip">Zeke Diaz — nephew</span><span class="chip">Mateo Smith — nephew</span><span class="chip">Lucia Smith — niece</span><span class="chip">Sarah Snape — niece</span><span class="chip">Oliver Snape — nephew</span></div></section>
 
@@ -1284,6 +1289,60 @@ window.addEventListener("DOMContentLoaded", wireBeaumontCrossLinks);
 
     <button class="back" onclick="showPage('beaumontFamily')">← Back to the Beaumont Family</button>
   </main>
+</section>
+
+
+<section id="joanneProfile" class="page">
+  <div class="profile-head">
+    <div class="crumb">Residents → Reid Family → Joanne Reid</div>
+    <h2>Joanne Rose Reid</h2>
+    <div class="aka">Siren</div>
+  </div>
+  <div class="becca-profile">
+    <button class="back" onclick="showPage('residents')">← Back to residents</button>
+    <div class="profile-grid">
+      <aside class="bio-panel">
+        <img class="profile-photo" src="joanne-profile.png" alt="Joanne Rose Reid">
+        <h3>Profile</h3>
+        <div class="bio-fact"><small>Full name</small><strong class="person-link" onclick="showResident('Joanne Rose Reid')">Joanne Rose Reid</strong></div>
+        <div class="bio-fact"><small>Born</small><strong>1958</strong></div>
+        <div class="bio-fact"><small>Birthplace</small><strong>France</strong></div>
+        <div class="bio-fact"><small>Current home</small><strong>Hollow's Creek</strong></div>
+        <div class="bio-fact"><small>Species</small><strong>Siren</strong></div>
+        <div class="bio-fact"><small>Former partner</small><strong class="person-link" onclick="showResident('Lukas Henry Beaumont')">Lukas Beaumont</strong></div>
+      </aside>
+      <main>
+        <section class="profile-section">
+          <h3>Immediate Family</h3>
+          <div class="chips">
+            <span class="chip">Michael Reid — Father</span><span class="chip">Emily Reid (née Thompson) — Mother</span>
+            <span class="chip">Ethan Reid — Brother</span><span class="chip">Marcus Reid — Brother</span>
+            <span class="chip">Christina Holt (née Reid) — Twin Sister</span><span class="chip">Olivia Reid (née Morgan) — Sister-in-law</span>
+            <span class="chip">Theodore Holt III — Brother-in-law</span>
+          </div>
+        </section>
+        <section class="profile-section">
+          <h3>Children</h3>
+          <div class="links-grid">
+            <div class="linkbox person-link" onclick="showResident('Libby Christine Beaumont')"><small>Daughter</small><div>Libby Beaumont</div></div>
+            <div class="linkbox person-link" onclick="showResident('Bethany Alana Beaumont')"><small>Daughter</small><div>Bethany Beaumont</div></div>
+            <div class="linkbox person-link" onclick="showResident('Reece Ethan Beaumont')"><small>Son</small><div>Reece Beaumont</div></div>
+            <div class="linkbox person-link" onclick="showResident('Leon Alex Beaumont')"><small>Son</small><div>Leon Beaumont</div></div>
+            <div class="linkbox person-link" onclick="showResident('Bradley Marcus Beaumont')"><small>Son</small><div>Bradley Beaumont</div></div>
+            <div class="linkbox person-link" onclick="showResident('Rebecca Rose Beaumont')"><small>Daughter</small><div>Rebecca Beaumont</div></div>
+          </div>
+        </section>
+        <section class="profile-section">
+          <h3>Extended Family</h3>
+          <div class="chips"><span class="chip">Liam Reid — Nephew</span><span class="chip">Ava Reid — Niece</span><span class="chip">Jamie Holt — Nephew</span><span class="chip">Theodore Holt IV — Nephew</span><span class="chip">Phoebe — Niece</span></div>
+        </section>
+        <section class="profile-section">
+          <h3>Friends</h3>
+          <div class="chips"><span class="chip">Isabella Montague</span><span class="chip">Evelyn Graves</span></div>
+        </section>
+      </main>
+    </div>
+  </div>
 </section>
 
 <section id="residentPlaceholder" class="page">
