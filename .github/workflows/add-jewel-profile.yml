@@ -1,4 +1,4 @@
-name: Add Jewel Lewandowski profile
+name: Add Jewel Lewandowski profile.
 on:
   push:
     branches: [main]
