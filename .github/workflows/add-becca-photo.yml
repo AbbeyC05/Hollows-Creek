@@ -1,4 +1,4 @@
-name: Add all Beaumont profile photos
+name: Maintain Hollow's Creek profiles
 
 on:
   push:
@@ -12,55 +12,83 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add Beaumont photos to profiles
+      - name: Ensure Joanne profile and links
         run: |
           python - <<'PY'
           from pathlib import Path
-
           p = Path('index.html')
           t = p.read_text(encoding='utf-8')
           changed = False
 
-          if '.profile-photo{' not in t:
-              marker = '@media(max-width:760px){.profile-grid{grid-template-columns:1fr}.album-grid,.links-grid{grid-template-columns:1fr}}'
-              css = '.profile-photo{width:100%;max-height:520px;object-fit:cover;object-position:center top;display:block;border:1px solid #dfd1bd;margin-bottom:18px;background:#eee}\n'
+          if "showPage('joanneProfile')" not in t:
+              marker = "function showResident(name) {\n"
+              route = "  if (name === 'Joanne Rose Reid' || name === 'Joanne Reid') {\n    showPage('joanneProfile');\n    return;\n  }\n"
               if marker in t:
-                  t = t.replace(marker, css + marker, 1)
+                  t = t.replace(marker, marker + route, 1)
                   changed = True
 
-          profiles = [
-              ('lukasProfile', 'lukas-profile.png', 'Lukas Henry Beaumont'),
-              ('rosaProfile', 'rosa-profile.png', 'Rosa Beaumont'),
-              ('lukasJrProfile', 'lukas-jr-profile.png', 'Lukas Henry Beaumont Jr'),
-              ('charlieProfile', 'charlie-profile.png', 'Charlie Steven Beaumont'),
-              ('libbyProfile', 'libby-profile.png', 'Libby Christine Beaumont'),
-              ('bethanyProfile', 'bethany-profile.png', 'Bethany Alana Beaumont'),
-              ('reeceProfile', 'reece-profile.png', 'Reece Ethan Beaumont'),
-              ('leonProfile', 'leon-profile.png', 'Leon Alex Beaumont'),
-              ('bradleyProfile', 'bradley-profile.png', 'Bradley Marcus Beaumont'),
-              ('beccaProfile', 'becca-profile.png', 'Rebecca Rose Beaumont'),
-              ('harperProfile', 'harper-profile.png', 'Harper Victoria Beaumont'),
-              ('melissaProfile', 'melissa-profile.png', 'Melissa Mary Beaumont'),
-              ('celiaProfile', 'celia-profile.png', 'Celia Isabella Beaumont'),
-              ('henryProfile', 'henry-profile.png', 'Henry Luke Beaumont'),
-              ('rileyProfile', 'riley-profile.png', 'Riley Faith Beaumont'),
-          ]
+          if '<section id="joanneProfile" class="page">' not in t:
+              anchor = '<section id="residentPlaceholder" class="page">'
+              profile = '''<section id="joanneProfile" class="page">
+  <div class="profile-head">
+    <div class="crumb">Hollow's Creek → Residents → Joanne Reid</div>
+    <div class="aka">Siren</div>
+    <h2>Joanne Rose Reid</h2>
+  </div>
+  <main class="becca-profile">
+    <div class="profile-grid">
+      <aside class="bio-panel">
+        <img class="profile-photo" src="joanne-profile.png" alt="Joanne Rose Reid">
+        <h3>Profile</h3>
+        <div class="bio-fact"><small>Born</small><strong>1958</strong></div>
+        <div class="bio-fact"><small>Birthplace</small><strong>France</strong></div>
+        <div class="bio-fact"><small>Current home</small><strong>Hollow's Creek</strong></div>
+        <div class="bio-fact"><small>Species</small><strong>Siren</strong></div>
+      </aside>
+      <article class="bio-panel">
+        <h3>Family</h3>
+        <div class="links-grid">
+          <div class="linkbox"><small>Father</small><div>Michael Reid</div></div>
+          <div class="linkbox"><small>Mother</small><div>Emily Reid (née Thompson)</div></div>
+          <div class="linkbox"><small>Twin sister</small><div>Christina Holt (née Reid)</div></div>
+          <div class="linkbox person-link" onclick="showResident('Lukas Henry Beaumont')"><small>Ex-partner</small><div>Lukas Beaumont</div></div>
+        </div>
+      </article>
+    </div>
+    <section class="profile-section"><h3>Siblings &amp; In-Laws</h3><div class="chips"><span class="chip">Ethan Reid — brother</span><span class="chip">Marcus Reid — brother</span><span class="chip">Christina Holt (née Reid) — twin sister</span><span class="chip">Olivia Reid (née Morgan) — sister-in-law</span><span class="chip">Theodore Holt III — brother-in-law</span></div></section>
+    <section class="profile-section"><h3>Children</h3><div class="links-grid">
+      <div class="linkbox person-link" onclick="showResident('Libby Christine Beaumont')"><small>Daughter</small><div>Libby Beaumont</div></div>
+      <div class="linkbox person-link" onclick="showResident('Bethany Alana Beaumont')"><small>Daughter</small><div>Bethany Beaumont</div></div>
+      <div class="linkbox person-link" onclick="showResident('Reece Ethan Beaumont')"><small>Son</small><div>Reece Beaumont</div></div>
+      <div class="linkbox person-link" onclick="showResident('Leon Alex Beaumont')"><small>Son</small><div>Leon Beaumont</div></div>
+      <div class="linkbox person-link" onclick="showResident('Bradley Marcus Beaumont')"><small>Son</small><div>Bradley Beaumont</div></div>
+      <div class="linkbox person-link" onclick="showResident('Rebecca Rose Beaumont')"><small>Daughter</small><div>Rebecca Beaumont</div></div>
+    </div></section>
+    <section class="profile-section"><h3>Extended Family</h3><div class="chips"><span class="chip">Liam Reid — nephew</span><span class="chip">Ava Reid — niece</span><span class="chip">Jamie Holt — nephew</span><span class="chip">Theodore Holt IV — nephew</span><span class="chip">Phoebe — niece</span></div></section>
+    <section class="profile-section"><h3>Friends</h3><div class="chips"><span class="chip">Isabella Montague</span><span class="chip">Evelyn Graves</span></div></section>
+    <button class="back" onclick="showPage('residents')">← Back to Residents</button>
+  </main>
+</section>
 
-          for section_id, filename, alt in profiles:
-              if f'src="{filename}"' in t:
-                  continue
-              section = f'<section id="{section_id}" class="page">'
-              start = t.find(section)
-              if start == -1:
-                  raise SystemExit(f'{section_id} section not found')
-              aside = '<aside class="bio-panel">'
-              pos = t.find(aside, start)
-              if pos == -1:
-                  raise SystemExit(f'{section_id} bio panel not found')
-              insert_at = pos + len(aside)
-              img = f'\n        <img class="profile-photo" src="{filename}" alt="{alt}">'
-              t = t[:insert_at] + img + t[insert_at:]
-              changed = True
+'''
+              if anchor in t:
+                  t = t.replace(anchor, profile + anchor, 1)
+                  changed = True
+
+          if "onclick=\"showResident('Joanne Rose Reid')\"" not in t:
+              marker = '<div class="resident-list">'
+              row = "\n      <button class=\"resident-row\" onclick=\"showResident('Joanne Rose Reid')\"><span>Joanne Rose Reid</span><small>Profile available →</small></button>"
+              if marker in t:
+                  t = t.replace(marker, marker + row, 1)
+                  changed = True
+
+          for old, new in [
+              ('<span class="chip">Joanne Reid', '<span class="chip person-link" onclick="showResident(\'Joanne Rose Reid\')">Joanne Reid'),
+              ('<span class="chip">Joanne Rose Reid', '<span class="chip person-link" onclick="showResident(\'Joanne Rose Reid\')">Joanne Rose Reid')
+          ]:
+              if old in t:
+                  t = t.replace(old, new)
+                  changed = True
 
           if changed:
               p.write_text(t, encoding='utf-8')
@@ -74,5 +102,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Add all Beaumont profile photos"
+          git commit -m "Add Joanne Reid profile and links"
           git push
