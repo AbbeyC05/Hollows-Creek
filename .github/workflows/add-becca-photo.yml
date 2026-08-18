@@ -1,4 +1,4 @@
-name: Add Becca profile photo
+name: Add all Beaumont profile photos
 
 on:
   push:
@@ -12,10 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add Becca photo to profile
+      - name: Add Beaumont photos to profiles
         run: |
           python - <<'PY'
           from pathlib import Path
+
           p = Path('index.html')
           t = p.read_text(encoding='utf-8')
           changed = False
@@ -27,17 +28,38 @@ jobs:
                   t = t.replace(marker, css + marker, 1)
                   changed = True
 
-          if 'src="becca-profile.png"' not in t:
-              section = '<section id="beccaProfile" class="page">'
+          profiles = [
+              ('lukasProfile', 'lukas-profile.png', 'Lukas Henry Beaumont'),
+              ('rosaProfile', 'rosa-profile.png', 'Rosa Beaumont'),
+              ('lukasJrProfile', 'lukas-jr-profile.png', 'Lukas Henry Beaumont Jr'),
+              ('charlieProfile', 'charlie-profile.png', 'Charlie Steven Beaumont'),
+              ('libbyProfile', 'libby-profile.png', 'Libby Christine Beaumont'),
+              ('bethanyProfile', 'bethany-profile.png', 'Bethany Alana Beaumont'),
+              ('reeceProfile', 'reece-profile.png', 'Reece Ethan Beaumont'),
+              ('leonProfile', 'leon-profile.png', 'Leon Alex Beaumont'),
+              ('bradleyProfile', 'bradley-profile.png', 'Bradley Marcus Beaumont'),
+              ('beccaProfile', 'becca-profile.png', 'Rebecca Rose Beaumont'),
+              ('harperProfile', 'harper-profile.png', 'Harper Victoria Beaumont'),
+              ('melissaProfile', 'melissa-profile.png', 'Melissa Mary Beaumont'),
+              ('celiaProfile', 'celia-profile.png', 'Celia Isabella Beaumont'),
+              ('henryProfile', 'henry-profile.png', 'Henry Luke Beaumont'),
+              ('rileyProfile', 'riley-profile.png', 'Riley Faith Beaumont'),
+          ]
+
+          for section_id, filename, alt in profiles:
+              if f'src="{filename}"' in t:
+                  continue
+              section = f'<section id="{section_id}" class="page">'
               start = t.find(section)
               if start == -1:
-                  raise SystemExit('Becca profile section not found')
+                  raise SystemExit(f'{section_id} section not found')
               aside = '<aside class="bio-panel">'
               pos = t.find(aside, start)
               if pos == -1:
-                  raise SystemExit('Becca bio panel not found')
+                  raise SystemExit(f'{section_id} bio panel not found')
               insert_at = pos + len(aside)
-              t = t[:insert_at] + '\n        <img class="profile-photo" src="becca-profile.png" alt="Rebecca Rose Beaumont">' + t[insert_at:]
+              img = f'\n        <img class="profile-photo" src="{filename}" alt="{alt}">'
+              t = t[:insert_at] + img + t[insert_at:]
               changed = True
 
           if changed:
@@ -52,5 +74,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Add Becca profile photo to page"
+          git commit -m "Add all Beaumont profile photos"
           git push
