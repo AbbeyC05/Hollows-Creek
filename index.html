@@ -15,17 +15,28 @@ fetch('site-base.html')
     document.write(html);
     document.close();
 
+    const loadDelphiniPatch = () => {
+      const delphini = document.createElement('script');
+      delphini.src = 'delphini-profile-patch.js?v=1';
+      delphini.onload = () => console.log('Delphini Montague profile patch loaded');
+      delphini.onerror = () => console.error('Could not load delphini-profile-patch.js');
+      document.body.appendChild(delphini);
+    };
+
     const loadAlexandriaPatch = () => {
       const alexandria = document.createElement('script');
-      alexandria.src = 'alexandria-profile-patch.js?v=1';
-      alexandria.onload = () => console.log('Alexandria Montague profile patch loaded');
+      alexandria.src = 'alexandria-profile-patch.js?v=2';
+      alexandria.onload = () => {
+        console.log('Alexandria Montague profile patch loaded');
+        loadDelphiniPatch();
+      };
       alexandria.onerror = () => console.error('Could not load alexandria-profile-patch.js');
       document.body.appendChild(alexandria);
     };
 
     const loadPatches = () => {
       const script = document.createElement('script');
-      script.src = 'site-patches.js?v=3';
+      script.src = 'site-patches.js?v=4';
       script.onload = () => {
         console.log('Hollow\'s Creek profile patches loaded');
         loadAlexandriaPatch();
