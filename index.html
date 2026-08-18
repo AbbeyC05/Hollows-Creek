@@ -15,10 +15,21 @@ fetch('site-base.html')
     document.write(html);
     document.close();
 
+    const loadHoltFamilyPatch = () => {
+      const holt = document.createElement('script');
+      holt.src = 'holt-family-patch.js?v=1';
+      holt.onload = () => console.log('Holt family page loaded');
+      holt.onerror = () => console.error('Could not load holt-family-patch.js');
+      document.body.appendChild(holt);
+    };
+
     const loadDelphiniPatch = () => {
       const delphini = document.createElement('script');
       delphini.src = 'delphini-profile-patch.js?v=1';
-      delphini.onload = () => console.log('Delphini Montague profile patch loaded');
+      delphini.onload = () => {
+        console.log('Delphini Montague profile patch loaded');
+        loadHoltFamilyPatch();
+      };
       delphini.onerror = () => console.error('Could not load delphini-profile-patch.js');
       document.body.appendChild(delphini);
     };
