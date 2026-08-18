@@ -106,15 +106,24 @@
     const familyButton = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Carter Family'));
     if (familyButton) familyButton.onclick = () => window.showPage('carterFamily');
 
-    const residents = document.querySelector('.resident-list');
-    if (residents) {
+    const cGroup = Array.from(document.querySelectorAll('.letter-group')).find(group => {
+      const letter = group.querySelector('.letter');
+      return letter && letter.textContent.trim().toUpperCase() === 'C';
+    });
+    const cResidents = cGroup ? cGroup.querySelector('.resident-list') : null;
+
+    if (cResidents) {
       ['Poppy Carter','Georgia Carter'].forEach(name => {
-        if (!Array.from(residents.querySelectorAll('button')).some(b => b.textContent.includes(name))) {
+        Array.from(document.querySelectorAll('.resident-row')).forEach(btn => {
+          if (btn.textContent.includes(name) && !cResidents.contains(btn)) btn.remove();
+        });
+
+        if (!Array.from(cResidents.querySelectorAll('button')).some(b => b.textContent.includes(name))) {
           const btn = document.createElement('button');
           btn.className = 'resident-row';
           btn.onclick = () => window.showResident(name);
           btn.innerHTML = `<span>${name}</span><small>View profile →</small>`;
-          residents.appendChild(btn);
+          cResidents.appendChild(btn);
         }
       });
     }
