@@ -3,8 +3,7 @@ name: Add Montague family page
 on:
   push:
     branches: [main]
-  schedule:
-    - cron: '*/5 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -18,23 +17,21 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          p = Path('index.html')
+          p = Path('site-base.html')
           t = p.read_text(encoding='utf-8')
-          if 'id="montagueFamily"' in t:
-              print('Montague family page already present')
-              raise SystemExit(0)
 
-          old = """function showFamily(name) {\n  if (name === 'Beaumont') {\n    showPage('beaumontFamily');\n    return;\n  }\n"""
-          new = """function showFamily(name) {\n  if (name === 'Beaumont') {\n    showPage('beaumontFamily');\n    return;\n  }\n  if (name === 'Montague') {\n    showPage('montagueFamily');\n    return;\n  }\n"""
-          if old not in t:
-              raise SystemExit('showFamily anchor not found')
-          t = t.replace(old, new, 1)
+          if "if (name === 'Montague')" not in t:
+              old = """function showFamily(name) {\n  if (name === 'Beaumont') {\n    showPage('beaumontFamily');\n    return;\n  }\n"""
+              new = """function showFamily(name) {\n  if (name === 'Beaumont') {\n    showPage('beaumontFamily');\n    return;\n  }\n  if (name === 'Montague') {\n    showPage('montagueFamily');\n    return;\n  }\n"""
+              if old not in t:
+                  raise SystemExit('showFamily anchor not found')
+              t = t.replace(old, new, 1)
 
-          anchor = '<section id="beaumontFamily" class="page">'
-          if anchor not in t:
-              raise SystemExit('Beaumont family anchor not found')
-
-          page = '''<section id="montagueFamily" class="page">
+          if 'id="montagueFamily"' not in t:
+              anchor = '<section id="beaumontFamily" class="page">'
+              if anchor not in t:
+                  raise SystemExit('Beaumont family anchor not found')
+              page = '''<section id="montagueFamily" class="page">
   <div class="family-title">
     <div class="crumb">Hollow's Creek → Families → Montague</div>
     <div class="subtitle">Family Profile</div>
@@ -44,7 +41,7 @@ jobs:
     <div class="overview-grid">
       <article class="panel">
         <h3>Family Overview</h3>
-        <p>The Montague family live on the Northside of Hollow's Creek. Much of their wider family history, work and influence is still to be documented in the town archive.</p>
+        <p>The Montague family live on the Northside of Hollow's Creek. Much of their wider family history is still being documented in the town archive.</p>
       </article>
       <aside class="panel">
         <div class="fact"><small>Family</small><strong>Montague</strong></div>
@@ -53,31 +50,25 @@ jobs:
         <div class="fact"><small>Parents</small><strong>Thomas Marvolo Montague II &amp; Isabella Montague</strong></div>
       </aside>
     </div>
-
     <section class="members">
       <h3>Family Members</h3>
       <div class="member-grid">
         <button class="member-card" onclick="showResident('Thomas Marvolo Montague II')"><span>Thomas Marvolo Montague II</span><small>Father • profile to be built →</small></button>
         <button class="member-card" onclick="showResident('Isabella Montague')"><span>Isabella Montague</span><small>Mother • profile to be built →</small></button>
-        <button class="member-card" onclick="showResident('Thomas Marvolo Montague III')"><span>Thomas Marvolo Montague III</span><small>View resident →</small></button>
-        <button class="member-card" onclick="showResident('Claribel Montague')"><span>Claribel Montague</span><small>View resident →</small></button>
-        <button class="member-card" onclick="showResident('Mattheo Thomas Marvolo Montague')"><span>Mattheo Thomas Marvolo Montague</span><small>View resident →</small></button>
-        <button class="member-card" onclick="showResident('Alexandria Jade Montague')"><span>Alexandria Jade Montague</span><small>View resident →</small></button>
-        <button class="member-card" onclick="showResident('Delphini Violet Montague')"><span>Delphini Violet Montague</span><small>View resident →</small></button>
+        <button class="member-card" onclick="showResident('Thomas Marvolo Montague III')"><span>Thomas Marvolo Montague III</span><small>Profile to be built →</small></button>
+        <button class="member-card" onclick="showResident('Claribel Montague')"><span>Claribel Montague</span><small>Profile to be built →</small></button>
+        <button class="member-card" onclick="showResident('Mattheo Thomas Marvolo Montague')"><span>Mattheo Thomas Marvolo Montague</span><small>Profile to be built →</small></button>
+        <button class="member-card" onclick="showResident('Alexandria Jade Montague')"><span>Alexandria Jade Montague</span><small>Profile to be built →</small></button>
+        <button class="member-card" onclick="showResident('Delphini Violet Montague')"><span>Delphini Violet Montague</span><small>Profile to be built →</small></button>
       </div>
     </section>
-
-    <section class="profile-section" style="margin-top:42px">
-      <h3>Archive Status</h3>
-      <p>The Montague family archive is still being expanded. Individual profiles, relationships, occupations and family history will be added as they are established.</p>
-    </section>
-
     <button class="back" onclick="showPage('families')">← Back to Families</button>
   </main>
 </section>
 
 '''
-          t = t.replace(anchor, page + anchor, 1)
+              t = t.replace(anchor, page + anchor, 1)
+
           p.write_text(t, encoding='utf-8')
           PY
       - name: Commit update
@@ -85,6 +76,6 @@ jobs:
           if git diff --quiet; then exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add site-base.html
           git commit -m "Add Montague family page"
           git push
