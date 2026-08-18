@@ -1,0 +1,89 @@
+name: Repair Joanne and Jewel profiles
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repair profiles and residents directory
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          t=p.read_text(encoding='utf-8')
+
+          # Ensure routes exist.
+          marker="function showResident(name) {\n"
+          if "name === 'Jewel Lewandowski'" not in t:
+              t=t.replace(marker, marker+"  if (name === 'Jewel Lewandowski') {\n    showPage('jewelProfile');\n    return;\n  }\n",1)
+          if "name === 'Joanne Rose Reid'" not in t:
+              t=t.replace(marker, marker+"  if (name === 'Joanne Rose Reid' || name === 'Joanne Reid') {\n    showPage('joanneProfile');\n    return;\n  }\n",1)
+
+          anchor='<section id="residentPlaceholder" class="page">'
+
+          if 'id="joanneProfile"' not in t:
+              joanne='''
+<section id="joanneProfile" class="page">
+  <div class="profile-head"><div class="crumb">Residents → Reid Family → Joanne Reid</div><h2>Joanne Rose Reid</h2><div class="aka">Siren</div></div>
+  <div class="becca-profile"><button class="back" onclick="showPage('residents')">← Back to residents</button><div class="profile-grid">
+    <aside class="bio-panel"><img class="profile-photo" src="joanne-profile.png" alt="Joanne Rose Reid"><h3>Profile</h3><div class="bio-fact"><small>Full name</small><strong>Joanne Rose Reid</strong></div><div class="bio-fact"><small>Born</small><strong>1958</strong></div><div class="bio-fact"><small>Birthplace</small><strong>France</strong></div><div class="bio-fact"><small>Current home</small><strong>Hollow's Creek</strong></div><div class="bio-fact"><small>Species</small><strong>Siren</strong></div><div class="bio-fact"><small>Former partner</small><strong class="person-link" onclick="showResident('Lukas Henry Beaumont')">Lukas Beaumont</strong></div></aside>
+    <main><section class="profile-section"><h3>Immediate Family</h3><div class="chips"><span class="chip">Michael Reid — Father</span><span class="chip">Emily Reid (née Thompson) — Mother</span><span class="chip">Ethan Reid — Brother</span><span class="chip">Marcus Reid — Brother</span><span class="chip">Christina Holt (née Reid) — Twin Sister</span><span class="chip">Olivia Reid (née Morgan) — Sister-in-law</span><span class="chip">Theodore Holt III — Brother-in-law</span></div></section><section class="profile-section"><h3>Children</h3><div class="links-grid"><div class="linkbox person-link" onclick="showResident('Libby Christine Beaumont')"><small>Daughter</small><div>Libby Beaumont</div></div><div class="linkbox person-link" onclick="showResident('Bethany Alana Beaumont')"><small>Daughter</small><div>Bethany Beaumont</div></div><div class="linkbox person-link" onclick="showResident('Reece Ethan Beaumont')"><small>Son</small><div>Reece Beaumont</div></div><div class="linkbox person-link" onclick="showResident('Leon Alex Beaumont')"><small>Son</small><div>Leon Beaumont</div></div><div class="linkbox person-link" onclick="showResident('Bradley Marcus Beaumont')"><small>Son</small><div>Bradley Beaumont</div></div><div class="linkbox person-link" onclick="showResident('Rebecca Rose Beaumont')"><small>Daughter</small><div>Rebecca Beaumont</div></div></div></section><section class="profile-section"><h3>Extended Family</h3><div class="chips"><span class="chip">Liam Reid — Nephew</span><span class="chip">Ava Reid — Niece</span><span class="chip">Jamie Holt — Nephew</span><span class="chip">Theodore Holt IV — Nephew</span><span class="chip">Phoebe — Niece</span></div></section><section class="profile-section"><h3>Friends</h3><div class="chips"><span class="chip">Isabella Montague</span><span class="chip">Evelyn Graves</span></div></section></main>
+  </div></div>
+</section>
+
+'''
+              t=t.replace(anchor,joanne+anchor,1)
+
+          if 'id="jewelProfile"' not in t:
+              jewel='''
+<section id="jewelProfile" class="page">
+  <div class="profile-head"><div class="crumb">Residents → Lewandowski Family → Jewel Lewandowski</div><h2>Jewel Lewandowski</h2><div class="aka">Human</div></div>
+  <div class="becca-profile"><button class="back" onclick="showPage('residents')">← Back to residents</button><div class="profile-grid">
+    <aside class="bio-panel"><img class="profile-photo" src="jewel-profile.png" alt="Jewel Lewandowski"><h3>Profile</h3><div class="bio-fact"><small>Full name</small><strong>Jewel Lewandowski</strong></div><div class="bio-fact"><small>Born</small><strong>1956</strong></div><div class="bio-fact"><small>Birthplace</small><strong>Marbella, Spain</strong></div><div class="bio-fact"><small>Current home</small><strong>Hollow's Creek</strong></div><div class="bio-fact"><small>Species</small><strong>Human</strong></div></aside>
+    <main><section class="profile-section"><h3>Immediate Family</h3><div class="chips"><span class="chip">Trever Lewandowski — Father</span><span class="chip">Kylie Lewandowski — Mother</span><span class="chip">Pedro Lewandowski — Brother</span><span class="chip">Cheryl Garcia (née Lewandowski) — Sister</span><span class="chip">Joaquin Lewandowski — Brother</span><span class="chip">Bianca Dominguez (née Lewandowski) — Sister</span></div></section><section class="profile-section"><h3>Relationships</h3><div class="chips"><span class="chip person-link" onclick="showResident('Lukas Henry Beaumont')">Lukas Beaumont — Ex-husband</span><span class="chip">Callum Dodds — Boyfriend</span></div></section><section class="profile-section"><h3>Children</h3><div class="links-grid"><div class="linkbox person-link" onclick="showResident('Lukas Henry Beaumont Jr')"><small>Son</small><div>Lukas Beaumont Jr</div></div><div class="linkbox person-link" onclick="showResident('Charlie Steven Beaumont')"><small>Son</small><div>Charlie Beaumont</div></div><div class="linkbox"><small>Son</small><div>Connor Dodds</div></div></div></section><section class="profile-section"><h3>Extended Family</h3><div class="chips"><span class="chip">Carlos Garcia — Brother-in-law</span><span class="chip">Valentino Garcia — Nephew</span><span class="chip">Luna Lewandowski (née Gonzalez) — Sister-in-law</span><span class="chip">Jazmin Lewandowski — Niece</span><span class="chip">Nora Lewandowski — Niece</span><span class="chip">Adelina Lewandowski — Niece</span><span class="chip">Javier Dominguez — Brother-in-law</span><span class="chip">Juan Dominguez — Nephew</span><span class="chip">Sierra Dominguez — Niece</span></div></section></main>
+  </div></div>
+</section>
+
+'''
+              t=t.replace(anchor,jewel+anchor,1)
+
+          # Residents navigation and sections.
+          if '<a href="#res-l">L</a>' not in t:
+              if '<a href="#res-r">R</a>' in t: t=t.replace('<a href="#res-r">R</a>','<a href="#res-l">L</a><a href="#res-r">R</a>',1)
+              else: t=t.replace('<div class="az"><a href="#res-b">B</a></div>','<div class="az"><a href="#res-b">B</a><a href="#res-l">L</a><a href="#res-r">R</a></div>',1)
+          if 'id="res-l"' not in t:
+              insert='<section class="letter-group" id="res-l"><div class="letter">L</div><div class="resident-list"><button class="resident-row" onclick="showResident(\'Jewel Lewandowski\')"><span>Jewel Lewandowski</span><small>Lewandowski Family</small></button></div></section>\n    '
+              if '<section class="letter-group" id="res-r">' in t: t=t.replace('<section class="letter-group" id="res-r">',insert+'<section class="letter-group" id="res-r">',1)
+              else: t=t.replace('</main>\n  <footer>HOLLOW\'S CREEK • RESIDENT DIRECTORY</footer>',insert+'</main>\n  <footer>HOLLOW\'S CREEK • RESIDENT DIRECTORY</footer>',1)
+          if 'id="res-r"' not in t:
+              insert='<section class="letter-group" id="res-r"><div class="letter">R</div><div class="resident-list"><button class="resident-row" onclick="showResident(\'Joanne Rose Reid\')"><span>Joanne Rose Reid</span><small>Reid Family</small></button></div></section>\n    '
+              t=t.replace('</main>\n  <footer>HOLLOW\'S CREEK • RESIDENT DIRECTORY</footer>',insert+'</main>\n  <footer>HOLLOW\'S CREEK • RESIDENT DIRECTORY</footer>',1)
+          elif "showResident('Joanne Rose Reid')" not in t[t.find('id="res-r"'):t.find('id="res-r"')+1500]:
+              pos=t.find('<div class="resident-list">',t.find('id="res-r"'))+len('<div class="resident-list">')
+              t=t[:pos]+"<button class=\"resident-row\" onclick=\"showResident('Joanne Rose Reid')\"><span>Joanne Rose Reid</span><small>Reid Family</small></button>"+t[pos:]
+
+          # Remove Joanne from B if present there.
+          bad='<button class="resident-row" onclick="showResident(\'Joanne Rose Reid\')"><span>Joanne Rose Reid</span><small>Reid Family</small></button>'
+          bstart=t.find('id="res-b"'); bend=t.find('</section>',bstart)
+          if bstart!=-1 and bend!=-1:
+              block=t[bstart:bend]
+              if bad in block: t=t[:bstart]+block.replace(bad,'')+t[bend:]
+
+          # Existing cross-links.
+          t=t.replace('<span class="chip">Jewel Lewandowski', '<span class="chip person-link" onclick="showResident(\'Jewel Lewandowski\')">Jewel Lewandowski')
+          t=t.replace('<span class="chip">Joanne Reid', '<span class="chip person-link" onclick="showResident(\'Joanne Rose Reid\')">Joanne Reid')
+
+          p.write_text(t,encoding='utf-8')
+          PY
+      - name: Commit repair
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Repair Joanne and Jewel profiles"
+          git push
