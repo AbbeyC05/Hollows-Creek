@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hollow's Creek</title>
 <script>
-fetch('site-base.html')
+fetch('site-base.html?v=2')
   .then(r => {
     if (!r.ok) throw new Error('Could not load site-base.html');
     return r.text();
@@ -15,30 +15,36 @@ fetch('site-base.html')
     document.write(html);
     document.close();
 
-    const loadScript = (src, label) => {
+    const loadScript = (src, label) => new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = src;
-      script.onload = () => console.log(label + ' loaded');
-      script.onerror = () => console.error('Could not load ' + src);
+      script.onload = () => {
+        console.log(label + ' loaded');
+        resolve();
+      };
+      script.onerror = () => {
+        console.error('Could not load ' + src);
+        reject(new Error('Could not load ' + src));
+      };
       document.body.appendChild(script);
-    };
+    });
 
-    const loadAllPatches = () => {
-      loadScript('site-patches.js?v=5', 'Main Montague profiles');
-      loadScript('alexandria-profile-patch.js?v=3', 'Alexandria Montague profile');
-      loadScript('delphini-profile-patch.js?v=2', 'Delphini Montague profile');
-      loadScript('holt-family-patch.js?v=3', 'Holt family page');
-      loadScript('holt-profiles-patch.js?v=1', 'Holt resident profiles');
-      loadScript('bardot-family-patch.js?v=1', 'Bardot family page');
-      loadScript('bardot-profiles-patch.js?v=1', 'Bardot resident profiles');
-      loadScript('blakely-brown-patch.js?v=1', 'Blakely and Brown families');
-      loadScript('carter-family-patch.js?v=3', 'Carter family and resident profiles');
+    const loadAllPatches = async () => {
+      await loadScript('site-patches.js?v=5', 'Main Montague profiles');
+      await loadScript('alexandria-profile-patch.js?v=3', 'Alexandria Montague profile');
+      await loadScript('delphini-profile-patch.js?v=2', 'Delphini Montague profile');
+      await loadScript('holt-family-patch.js?v=3', 'Holt family page');
+      await loadScript('holt-profiles-patch.js?v=1', 'Holt resident profiles');
+      await loadScript('bardot-family-patch.js?v=1', 'Bardot family page');
+      await loadScript('bardot-profiles-patch.js?v=1', 'Bardot resident profiles');
+      await loadScript('blakely-brown-patch.js?v=1', 'Blakely and Brown families');
+      await loadScript('carter-family-patch.js?v=4', 'Carter family and resident profiles');
     };
 
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadAllPatches, { once: true });
+      document.addEventListener('DOMContentLoaded', () => loadAllPatches().catch(console.error), { once: true });
     } else {
-      loadAllPatches();
+      loadAllPatches().catch(console.error);
     }
   })
   .catch(err => {
