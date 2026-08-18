@@ -17,7 +17,7 @@ fetch('site-base.html')
 
     const loadPatches = () => {
       const script = document.createElement('script');
-      script.src = 'site-patches.js?v=2';
+      script.src = 'site-patches.js?v=3';
       script.onload = () => console.log('Hollow\'s Creek profile patches loaded');
       script.onerror = () => console.error('Could not load site-patches.js');
       document.body.appendChild(script);
