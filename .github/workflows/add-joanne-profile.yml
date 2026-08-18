@@ -1,4 +1,4 @@
-name: Add Joanne Reid profile
+name: Fix Joanne residents section
 
 on:
   push:
@@ -13,41 +13,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build Joanne profile and links
+      - name: Move Joanne from B to R
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('index.html')
-          t=p.read_text(encoding='utf-8')
-          if 'id="joanneProfile"' in t:
-              print('Joanne already present')
-              raise SystemExit(0)
+          p = Path('index.html')
+          t = p.read_text(encoding='utf-8')
 
-          marker="function showResident(name) {\n"
-          route="  if (name === 'Joanne Rose Reid' || name === 'Joanne Reid') {\n    showPage('joanneProfile');\n    return;\n  }\n"
-          if marker not in t:
-              raise SystemExit('showResident marker not found')
-          t=t.replace(marker, marker+route, 1)
+          joanne = '<button class="resident-row" onclick="showResident(\'Joanne Rose Reid\')"><span>Joanne Rose Reid</span><small>Reid Family</small></button>'
+          t = t.replace(joanne, '', 1)
 
-          resident_anchor='<section id="residentPlaceholder" class="page">'
-          if resident_anchor not in t:
-              raise SystemExit('resident placeholder marker not found')
+          old_az = '<div class="az"><a href="#res-b">B</a></div>'
+          new_az = '<div class="az"><a href="#res-b">B</a><a href="#res-r">R</a></div>'
+          if old_az in t:
+              t = t.replace(old_az, new_az, 1)
 
-          joanne='''\n<section id="joanneProfile" class="page">\n  <div class="profile-head">\n    <div class="crumb">Residents → Reid Family → Joanne Reid</div>\n    <h2>Joanne Rose Reid</h2>\n    <div class="aka">Siren</div>\n  </div>\n  <div class="becca-profile">\n    <button class="back" onclick="showPage('residents')">← Back to residents</button>\n    <div class="profile-grid">\n      <aside class="bio-panel">\n        <img class="profile-photo" src="joanne-profile.png" alt="Joanne Rose Reid">\n        <h3>Profile</h3>\n        <div class="bio-fact"><small>Full name</small><strong>Joanne Rose Reid</strong></div>\n        <div class="bio-fact"><small>Born</small><strong>1958</strong></div>\n        <div class="bio-fact"><small>Birthplace</small><strong>France</strong></div>\n        <div class="bio-fact"><small>Current home</small><strong>Hollow's Creek</strong></div>\n        <div class="bio-fact"><small>Species</small><strong>Siren</strong></div>\n        <div class="bio-fact"><small>Former partner</small><strong class="person-link" onclick="showResident('Lukas Henry Beaumont')">Lukas Beaumont</strong></div>\n      </aside>\n      <main>\n        <section class="profile-section">\n          <h3>Immediate Family</h3>\n          <div class="chips">\n            <span class="chip">Michael Reid — Father</span><span class="chip">Emily Reid (née Thompson) — Mother</span>\n            <span class="chip">Ethan Reid — Brother</span><span class="chip">Marcus Reid — Brother</span>\n            <span class="chip">Christina Holt (née Reid) — Twin Sister</span><span class="chip">Olivia Reid (née Morgan) — Sister-in-law</span>\n            <span class="chip">Theodore Holt III — Brother-in-law</span>\n          </div>\n        </section>\n        <section class="profile-section">\n          <h3>Children</h3>\n          <div class="links-grid">\n            <div class="linkbox person-link" onclick="showResident('Libby Christine Beaumont')"><small>Daughter</small><div>Libby Beaumont</div></div>\n            <div class="linkbox person-link" onclick="showResident('Bethany Alana Beaumont')"><small>Daughter</small><div>Bethany Beaumont</div></div>\n            <div class="linkbox person-link" onclick="showResident('Reece Ethan Beaumont')"><small>Son</small><div>Reece Beaumont</div></div>\n            <div class="linkbox person-link" onclick="showResident('Leon Alex Beaumont')"><small>Son</small><div>Leon Beaumont</div></div>\n            <div class="linkbox person-link" onclick="showResident('Bradley Marcus Beaumont')"><small>Son</small><div>Bradley Beaumont</div></div>\n            <div class="linkbox person-link" onclick="showResident('Rebecca Rose Beaumont')"><small>Daughter</small><div>Rebecca Beaumont</div></div>\n          </div>\n        </section>\n        <section class="profile-section">\n          <h3>Extended Family</h3>\n          <div class="chips"><span class="chip">Liam Reid — Nephew</span><span class="chip">Ava Reid — Niece</span><span class="chip">Jamie Holt — Nephew</span><span class="chip">Theodore Holt IV — Nephew</span><span class="chip">Phoebe — Niece</span></div>\n        </section>\n        <section class="profile-section">\n          <h3>Friends</h3>\n          <div class="chips"><span class="chip">Isabella Montague</span><span class="chip">Evelyn Graves</span></div>\n        </section>\n      </main>\n    </div>\n  </div>\n</section>\n\n'''
-          t=t.replace(resident_anchor, joanne+resident_anchor,1)
+          b_end = '''    </section>\n  </main>\n  <footer>HOLLOW'S CREEK • RESIDENT DIRECTORY</footer>'''
+          r_section = '''    </section>\n    <section class="letter-group" id="res-r">\n      <div class="letter">R</div>\n      <div class="resident-list">\n        <button class="resident-row" onclick="showResident('Joanne Rose Reid')"><span>Joanne Rose Reid</span><small>Reid Family</small></button>\n      </div>\n    </section>\n  </main>\n  <footer>HOLLOW'S CREEK • RESIDENT DIRECTORY</footer>'''
+          if 'id="res-r"' not in t and b_end in t:
+              t = t.replace(b_end, r_section, 1)
 
-          list_marker='<div class="resident-list">'
-          if list_marker in t and "showResident('Joanne Rose Reid')" not in t:
-              row='\n      <button class="resident-row" onclick="showResident(\'Joanne Rose Reid\')"><span>Joanne Rose Reid</span><small>Reid Family</small></button>'
-              t=t.replace(list_marker,list_marker+row,1)
-
-          # Link Joanne references from existing profiles.
-          t=t.replace('<span class="chip">Joanne Reid', '<span class="chip person-link" onclick="showResident(\'Joanne Rose Reid\')">Joanne Reid')
-          t=t.replace('<span class="chip">Joanne Rose Reid', '<span class="chip person-link" onclick="showResident(\'Joanne Rose Reid\')">Joanne Rose Reid')
-          t=t.replace('<strong>Joanne Reid</strong>', '<strong class="person-link" onclick="showResident(\'Joanne Rose Reid\')">Joanne Reid</strong>')
-          t=t.replace('<strong>Joanne Rose Reid</strong>', '<strong class="person-link" onclick="showResident(\'Joanne Rose Reid\')">Joanne Rose Reid</strong>')
-
-          p.write_text(t,encoding='utf-8')
+          p.write_text(t, encoding='utf-8')
           PY
       - name: Commit update
         run: |
@@ -58,5 +44,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Add Joanne Reid profile and family links"
+          git commit -m "Move Joanne Reid to R residents section"
           git push
