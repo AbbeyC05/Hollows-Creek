@@ -1,0 +1,57 @@
+name: Add Jewel Lewandowski profile
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add Jewel profile
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html'); t=p.read_text(encoding='utf-8')
+          if 'id="jewelProfile"' in t:
+            print('Jewel already present'); raise SystemExit(0)
+          marker="function showResident(name) {\n"
+          route="  if (name === 'Jewel Lewandowski') {\n    showPage('jewelProfile');\n    return;\n  }\n"
+          t=t.replace(marker,marker+route,1)
+          anchor='<section id="residentPlaceholder" class="page">'
+          jewel='''
+<section id="jewelProfile" class="page">
+  <div class="profile-head"><div class="crumb">Residents → Lewandowski Family → Jewel Lewandowski</div><h2>Jewel Lewandowski</h2><div class="aka">Human</div></div>
+  <div class="becca-profile"><button class="back" onclick="showPage('residents')">← Back to residents</button><div class="profile-grid">
+    <aside class="bio-panel"><img class="profile-photo" src="jewel-profile.png" alt="Jewel Lewandowski"><h3>Profile</h3>
+      <div class="bio-fact"><small>Full name</small><strong>Jewel Lewandowski</strong></div><div class="bio-fact"><small>Born</small><strong>1956</strong></div><div class="bio-fact"><small>Birthplace</small><strong>Marbella, Spain</strong></div><div class="bio-fact"><small>Current home</small><strong>Hollow's Creek</strong></div><div class="bio-fact"><small>Species</small><strong>Human</strong></div>
+    </aside><main>
+      <section class="profile-section"><h3>Immediate Family</h3><div class="chips"><span class="chip">Trever Lewandowski — Father</span><span class="chip">Kylie Lewandowski — Mother</span><span class="chip">Pedro Lewandowski — Brother</span><span class="chip">Cheryl Garcia (née Lewandowski) — Sister</span><span class="chip">Joaquin Lewandowski — Brother</span><span class="chip">Bianca Dominguez (née Lewandowski) — Sister</span></div></section>
+      <section class="profile-section"><h3>Relationships</h3><div class="chips"><span class="chip person-link" onclick="showResident('Lukas Henry Beaumont')">Lukas Beaumont — Ex-husband</span><span class="chip">Callum Dodds — Boyfriend</span></div></section>
+      <section class="profile-section"><h3>Children</h3><div class="links-grid"><div class="linkbox person-link" onclick="showResident('Lukas Henry Beaumont Jr')"><small>Son</small><div>Lukas Beaumont Jr</div></div><div class="linkbox person-link" onclick="showResident('Charlie Steven Beaumont')"><small>Son</small><div>Charlie Beaumont</div></div><div class="linkbox"><small>Son</small><div>Connor Dodds</div></div></div></section>
+      <section class="profile-section"><h3>Extended Family</h3><div class="chips"><span class="chip">Carlos Garcia — Brother-in-law</span><span class="chip">Valentino Garcia — Nephew</span><span class="chip">Luna Lewandowski (née Gonzalez) — Sister-in-law</span><span class="chip">Jazmin Lewandowski — Niece</span><span class="chip">Nora Lewandowski — Niece</span><span class="chip">Adelina Lewandowski — Niece</span><span class="chip">Javier Dominguez — Brother-in-law</span><span class="chip">Juan Dominguez — Nephew</span><span class="chip">Sierra Dominguez — Niece</span></div></section>
+    </main></div></div>
+</section>
+
+'''
+          t=t.replace(anchor,jewel+anchor,1)
+          # Add L to A-Z navigation and a Lewandowski resident section before R.
+          if '<a href="#res-l">L</a>' not in t:
+            t=t.replace('<a href="#res-r">R</a>','<a href="#res-l">L</a><a href="#res-r">R</a>',1)
+          rsec='<section class="letter-group" id="res-r">'
+          lsec='''<section class="letter-group" id="res-l"><div class="letter">L</div><div class="resident-list"><button class="resident-row" onclick="showResident('Jewel Lewandowski')"><span>Jewel Lewandowski</span><small>Lewandowski Family</small></button></div></section>\n    '''
+          t=t.replace(rsec,lsec+rsec,1)
+          # Link Jewel wherever she is already mentioned on Beaumont profiles.
+          t=t.replace('<span class="chip">Jewel Lewandowski', '<span class="chip person-link" onclick="showResident(\'Jewel Lewandowski\')">Jewel Lewandowski')
+          t=t.replace('<strong>Jewel Lewandowski</strong>', '<strong class="person-link" onclick="showResident(\'Jewel Lewandowski\')">Jewel Lewandowski</strong>')
+          p.write_text(t,encoding='utf-8')
+          PY
+      - name: Commit update
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Add Jewel Lewandowski profile and links"
+          git push
