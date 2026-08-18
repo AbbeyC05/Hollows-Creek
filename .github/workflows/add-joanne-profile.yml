@@ -1,0 +1,113 @@
+name: Add Joanne Reid profile
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Joanne profile and links
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          t=p.read_text(encoding='utf-8')
+          if 'joanneProfile' in t:
+              raise SystemExit(0)
+
+          # Route Joanne from any linked name.
+          marker="function showResident(name) {\n"
+          route="  if (name === 'Joanne Rose Reid' || name === 'Joanne Reid') {\n    showPage('joanneProfile');\n    return;\n  }\n"
+          t=t.replace(marker, marker+route, 1)
+
+          # Make Joanne references clickable anywhere the site already renders her name as a chip/link.
+          # Existing global person-link logic handles known Beaumonts; add a small explicit click pass for Joanne.
+          script_marker='const beaumontAliases = ['
+          helper="""const joanneAliases = ['Joanne Rose Reid','Joanne Reid'];\n\n"""
+          t=t.replace(script_marker, helper+script_marker,1)
+
+          # Add Joanne to residents list before the placeholder page, so she is directly discoverable.
+          resident_anchor='<section id="residentPlaceholder" class="page">'
+          joanne="""
+<section id="joanneProfile" class="page">
+  <div class="profile-head">
+    <div class="crumb">Residents → Reid Family → Joanne Reid</div>
+    <h2>Joanne Rose Reid</h2>
+    <div class="aka">Siren • Mother of the Beaumont sextuplets</div>
+  </div>
+  <div class="becca-profile">
+    <button class="back" onclick="showPage('residents')">← Back to residents</button>
+    <div class="profile-grid">
+      <aside class="bio-panel">
+        <img class="profile-photo" src="joanne-profile.png" alt="Joanne Rose Reid">
+        <h3>Profile</h3>
+        <div class="bio-fact"><small>Full name</small><strong>Joanne Rose Reid</strong></div>
+        <div class="bio-fact"><small>Born</small><strong>1958</strong></div>
+        <div class="bio-fact"><small>Birthplace</small><strong>France</strong></div>
+        <div class="bio-fact"><small>Current home</small><strong>Hollow's Creek</strong></div>
+        <div class="bio-fact"><small>Species</small><strong>Siren</strong></div>
+        <div class="bio-fact"><small>Former partner</small><strong class="person-link" onclick="showResident('Lukas Henry Beaumont')">Lukas Beaumont</strong></div>
+      </aside>
+      <main>
+        <section class="profile-section">
+          <h3>Immediate Family</h3>
+          <div class="chips">
+            <span class="chip">Michael Reid — Father</span><span class="chip">Emily Reid (née Thompson) — Mother</span>
+            <span class="chip">Ethan Reid — Brother</span><span class="chip">Marcus Reid — Brother</span>
+            <span class="chip">Christina Holt (née Reid) — Twin Sister</span><span class="chip">Olivia Reid (née Morgan) — Sister-in-law</span>
+            <span class="chip">Theodore Holt III — Brother-in-law</span>
+          </div>
+        </section>
+        <section class="profile-section">
+          <h3>Children</h3>
+          <div class="links-grid">
+            <div class="linkbox person-link" onclick="showResident('Libby Christine Beaumont')"><small>Daughter</small><div>Libby Beaumont</div></div>
+            <div class="linkbox person-link" onclick="showResident('Bethany Alana Beaumont')"><small>Daughter</small><div>Bethany Beaumont</div></div>
+            <div class="linkbox person-link" onclick="showResident('Reece Ethan Beaumont')"><small>Son</small><div>Reece Beaumont</div></div>
+            <div class="linkbox person-link" onclick="showResident('Leon Alex Beaumont')"><small>Son</small><div>Leon Beaumont</div></div>
+            <div class="linkbox person-link" onclick="showResident('Bradley Marcus Beaumont')"><small>Son</small><div>Bradley Beaumont</div></div>
+            <div class="linkbox person-link" onclick="showResident('Rebecca Rose Beaumont')"><small>Daughter</small><div>Rebecca Beaumont</div></div>
+          </div>
+        </section>
+        <section class="profile-section">
+          <h3>Extended Family</h3>
+          <div class="chips"><span class="chip">Liam Reid — Nephew</span><span class="chip">Ava Reid — Niece</span><span class="chip">Jamie Holt — Nephew</span><span class="chip">Theodore Holt IV — Nephew</span><span class="chip">Phoebe — Niece</span></div>
+        </section>
+        <section class="profile-section">
+          <h3>Friends</h3>
+          <div class="chips"><span class="chip">Isabella Montague</span><span class="chip">Evelyn Graves</span></div>
+        </section>
+      </main>
+    </div>
+  </div>
+</section>
+
+"""
+          t=t.replace(resident_anchor, joanne+resident_anchor,1)
+
+          # Add Joanne to residents directory if not already present. Find the resident list and insert first.
+          list_marker='<div class="resident-list">'
+          if list_marker in t:
+              row='\n      <button class="resident-row" onclick="showResident(\'Joanne Rose Reid\')"><span>Joanne Rose Reid</span><small>Reid Family</small></button>'
+              t=t.replace(list_marker,list_marker+row,1)
+
+          # Convert plain Joanne chips on existing Beaumont pages into direct links without changing displayed text.
+          t=t.replace('<span class="chip">Joanne Reid', '<span class="chip person-link" onclick="showResident(\'Joanne Rose Reid\')">Joanne Reid')
+          t=t.replace('<span class="chip">Joanne Rose Reid', '<span class="chip person-link" onclick="showResident(\'Joanne Rose Reid\')">Joanne Rose Reid')
+
+          p.write_text(t,encoding='utf-8')
+          PY
+      - name: Commit update
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Add Joanne Reid profile and family links"
+          git push
