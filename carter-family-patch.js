@@ -70,13 +70,8 @@
         </div>
         <main class="becca-profile">
           <div class="profile-grid">
-            <div>
-              <img class="profile-photo" src="${image}" alt="${name}">
-            </div>
-            <article class="bio-panel">
-              <h3>Profile</h3>
-              ${facts}
-            </article>
+            <div><img class="profile-photo" src="${image}" alt="${name}"></div>
+            <article class="bio-panel"><h3>Profile</h3>${facts}</article>
           </div>
           <section class="profile-section"><h3>Relationship</h3><div class="chips"><span class="chip">${relationship}</span></div></section>
           <section class="profile-section"><h3>Friends &amp; Family</h3><div class="chips">${friends}</div></section>
@@ -85,46 +80,46 @@
       document.getElementById('beaumontFamily').before(page);
     };
 
-    makeProfile(
-      'poppyCarterProfile',
-      'Poppy Carter',
-      'poppy-carter-profile.png',
-      '<div class="bio-fact"><small>Born</small><strong>1980</strong></div><div class="bio-fact"><small>Birthplace</small><strong>Hollow\'s Creek</strong></div><div class="bio-fact"><small>Residence</small><strong>Southside, Hollow\'s Creek</strong></div><div class="bio-fact"><small>Education</small><strong>Creekside High</strong></div>',
-      'Felix Brown — boyfriend',
-      '<span class="chip person-link" onclick="showResident(\'Georgia Carter\')">Georgia Carter — cousin &amp; friend</span><span class="chip">Piper Elswood — friend</span><span class="chip">Kasey Ford — friend</span>'
-    );
-
-    makeProfile(
-      'georgiaCarterProfile',
-      'Georgia Carter',
-      'georgia-carter-profile.png',
-      '<div class="bio-fact"><small>Born</small><strong>1980</strong></div><div class="bio-fact"><small>Birthplace</small><strong>Hollow\'s Creek</strong></div><div class="bio-fact"><small>Residence</small><strong>Southside, Hollow\'s Creek</strong></div><div class="bio-fact"><small>Education</small><strong>Creekside High</strong></div>',
-      'Harry Porter — boyfriend',
-      '<span class="chip person-link" onclick="showResident(\'Poppy Carter\')">Poppy Carter — cousin &amp; friend</span><span class="chip">Piper Elswood — friend</span><span class="chip">Kasey Ford — friend</span>'
-    );
+    makeProfile('poppyCarterProfile','Poppy Carter','poppy-carter-profile.png','<div class="bio-fact"><small>Born</small><strong>1980</strong></div><div class="bio-fact"><small>Birthplace</small><strong>Hollow\'s Creek</strong></div><div class="bio-fact"><small>Residence</small><strong>Southside, Hollow\'s Creek</strong></div><div class="bio-fact"><small>Education</small><strong>Creekside High</strong></div>','Felix Brown — boyfriend','<span class="chip person-link" onclick="showResident(\'Georgia Carter\')">Georgia Carter — cousin &amp; friend</span><span class="chip">Piper Elswood — friend</span><span class="chip">Kasey Ford — friend</span>');
+    makeProfile('georgiaCarterProfile','Georgia Carter','georgia-carter-profile.png','<div class="bio-fact"><small>Born</small><strong>1980</strong></div><div class="bio-fact"><small>Birthplace</small><strong>Hollow\'s Creek</strong></div><div class="bio-fact"><small>Residence</small><strong>Southside, Hollow\'s Creek</strong></div><div class="bio-fact"><small>Education</small><strong>Creekside High</strong></div>','Harry Porter — boyfriend','<span class="chip person-link" onclick="showResident(\'Poppy Carter\')">Poppy Carter — cousin &amp; friend</span><span class="chip">Piper Elswood — friend</span><span class="chip">Kasey Ford — friend</span>');
 
     const familyButton = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Carter Family'));
     if (familyButton) familyButton.onclick = () => window.showPage('carterFamily');
 
-    const cGroup = Array.from(document.querySelectorAll('.letter-group')).find(group => {
-      const letter = group.querySelector('.letter');
-      return letter && letter.textContent.trim().toUpperCase() === 'C';
-    });
-    const cResidents = cGroup ? cGroup.querySelector('.resident-list') : null;
+    const residentsPage = document.getElementById('residents');
+    const residentsWrap = residentsPage ? residentsPage.querySelector('.residents-wrap') : null;
+    const bGroup = document.getElementById('res-b');
+    const lGroup = document.getElementById('res-l');
+    if (residentsWrap && bGroup) {
+      let cGroup = document.getElementById('res-c');
+      if (!cGroup) {
+        cGroup = document.createElement('section');
+        cGroup.className = 'letter-group';
+        cGroup.id = 'res-c';
+        cGroup.innerHTML = '<div class="letter">C</div><div class="resident-list"></div>';
+        residentsWrap.insertBefore(cGroup, lGroup || bGroup.nextSibling);
+      }
 
-    if (cResidents) {
+      const az = residentsWrap.querySelector('.az');
+      if (az && !az.querySelector('a[href="#res-c"]')) {
+        const link = document.createElement('a');
+        link.href = '#res-c';
+        link.textContent = 'C';
+        const lLink = az.querySelector('a[href="#res-l"]');
+        az.insertBefore(link, lLink || null);
+      }
+
+      const cResidents = cGroup.querySelector('.resident-list');
       ['Poppy Carter','Georgia Carter'].forEach(name => {
-        Array.from(document.querySelectorAll('.resident-row')).forEach(btn => {
-          if (btn.textContent.includes(name) && !cResidents.contains(btn)) btn.remove();
+        document.querySelectorAll('.resident-row').forEach(btn => {
+          const label = btn.querySelector('span');
+          if (label && label.textContent.trim() === name) btn.remove();
         });
-
-        if (!Array.from(cResidents.querySelectorAll('button')).some(b => b.textContent.includes(name))) {
-          const btn = document.createElement('button');
-          btn.className = 'resident-row';
-          btn.onclick = () => window.showResident(name);
-          btn.innerHTML = `<span>${name}</span><small>View profile →</small>`;
-          cResidents.appendChild(btn);
-        }
+        const btn = document.createElement('button');
+        btn.className = 'resident-row';
+        btn.onclick = () => window.showResident(name);
+        btn.innerHTML = `<span>${name}</span><small>Profile available →</small>`;
+        cResidents.appendChild(btn);
       });
     }
   };
