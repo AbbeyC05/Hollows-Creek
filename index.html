@@ -15,51 +15,25 @@ fetch('site-base.html')
     document.write(html);
     document.close();
 
-    const loadHoltFamilyPatch = () => {
-      const holt = document.createElement('script');
-      holt.src = 'holt-family-patch.js?v=1';
-      holt.onload = () => console.log('Holt family page loaded');
-      holt.onerror = () => console.error('Could not load holt-family-patch.js');
-      document.body.appendChild(holt);
-    };
-
-    const loadDelphiniPatch = () => {
-      const delphini = document.createElement('script');
-      delphini.src = 'delphini-profile-patch.js?v=1';
-      delphini.onload = () => {
-        console.log('Delphini Montague profile patch loaded');
-        loadHoltFamilyPatch();
-      };
-      delphini.onerror = () => console.error('Could not load delphini-profile-patch.js');
-      document.body.appendChild(delphini);
-    };
-
-    const loadAlexandriaPatch = () => {
-      const alexandria = document.createElement('script');
-      alexandria.src = 'alexandria-profile-patch.js?v=2';
-      alexandria.onload = () => {
-        console.log('Alexandria Montague profile patch loaded');
-        loadDelphiniPatch();
-      };
-      alexandria.onerror = () => console.error('Could not load alexandria-profile-patch.js');
-      document.body.appendChild(alexandria);
-    };
-
-    const loadPatches = () => {
+    const loadScript = (src, label) => {
       const script = document.createElement('script');
-      script.src = 'site-patches.js?v=4';
-      script.onload = () => {
-        console.log('Hollow\'s Creek profile patches loaded');
-        loadAlexandriaPatch();
-      };
-      script.onerror = () => console.error('Could not load site-patches.js');
+      script.src = src;
+      script.onload = () => console.log(label + ' loaded');
+      script.onerror = () => console.error('Could not load ' + src);
       document.body.appendChild(script);
     };
 
+    const loadAllPatches = () => {
+      loadScript('site-patches.js?v=5', 'Main Montague profiles');
+      loadScript('alexandria-profile-patch.js?v=3', 'Alexandria Montague profile');
+      loadScript('delphini-profile-patch.js?v=2', 'Delphini Montague profile');
+      loadScript('holt-family-patch.js?v=2', 'Holt family page');
+    };
+
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadPatches, { once: true });
+      document.addEventListener('DOMContentLoaded', loadAllPatches, { once: true });
     } else {
-      loadPatches();
+      loadAllPatches();
     }
   })
   .catch(err => {
