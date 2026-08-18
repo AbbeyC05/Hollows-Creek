@@ -1,4 +1,4 @@
-name: Repair Joanne and Jewel profiles
+name: Repair Joanne and Jewel profiles.
 on:
   push:
     branches: [main]
