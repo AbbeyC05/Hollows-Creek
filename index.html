@@ -8,64 +8,55 @@
 fetch('site-base.html')
   .then(r => r.text())
   .then(html => {
-    const oldShowFamily = `function showFamily(name) {
-  if (name === 'Beaumont') {
-    showPage('beaumontFamily');
-    return;
-  }
-`;
-    const newShowFamily = `function showFamily(name) {
-  if (name === 'Beaumont') {
-    showPage('beaumontFamily');
-    return;
-  }
-  if (name === 'Montague') {
-    showPage('montagueFamily');
-    return;
-  }
-`;
-    if (!html.includes("if (name === 'Montague')")) {
-      html = html.replace(oldShowFamily, newShowFamily);
+    const oldShowFamily = `function showFamily(name) {\n  if (name === 'Beaumont') {\n    showPage('beaumontFamily');\n    return;\n  }\n`;
+    const newShowFamily = `function showFamily(name) {\n  if (name === 'Beaumont') {\n    showPage('beaumontFamily');\n    return;\n  }\n  if (name === 'Montague') {\n    showPage('montagueFamily');\n    return;\n  }\n`;
+    if (!html.includes("if (name === 'Montague')")) html = html.replace(oldShowFamily, newShowFamily);
+
+    if (!html.includes("name === 'Thomas Marvolo Montague II'")) {
+      html = html.replace('function showResident(name) {', `function showResident(name) {\n  if (name === 'Thomas Marvolo Montague II') {\n    showPage('thomasMontagueIIProfile');\n    return;\n  }`);
     }
 
     if (!html.includes('id="montagueFamily"')) {
       const montaguePage = `<section id="montagueFamily" class="page">
-  <div class="family-title">
-    <div class="crumb">Hollow's Creek → Families → Montague</div>
-    <div class="subtitle">Family Profile</div>
-    <h2>The Montague Family</h2>
-  </div>
+  <div class="family-title"><div class="crumb">Hollow's Creek → Families → Montague</div><div class="subtitle">Family Profile</div><h2>The Montague Family</h2></div>
   <main class="beaumont-shell">
-    <div class="overview-grid">
-      <article class="panel">
-        <h3>Family Overview</h3>
-        <p>The Montague family live on the Northside of Hollow's Creek. Much of their wider family history is still being documented in the town archive.</p>
-      </article>
-      <aside class="panel">
-        <div class="fact"><small>Family</small><strong>Montague</strong></div>
-        <div class="fact"><small>Residence</small><strong>Hollow's Creek</strong></div>
-        <div class="fact"><small>Area</small><strong>Northside</strong></div>
-        <div class="fact"><small>Parents</small><strong>Thomas Marvolo Montague II &amp; Isabella Montague</strong></div>
-      </aside>
-    </div>
-    <section class="members">
-      <h3>Family Members</h3>
-      <div class="member-grid">
-        <button class="member-card" onclick="showResident('Thomas Marvolo Montague II')"><span>Thomas Marvolo Montague II</span><small>Father • profile to be built →</small></button>
-        <button class="member-card" onclick="showResident('Isabella Montague')"><span>Isabella Montague</span><small>Mother • profile to be built →</small></button>
-        <button class="member-card" onclick="showResident('Thomas Marvolo Montague III')"><span>Thomas Marvolo Montague III</span><small>Profile to be built →</small></button>
-        <button class="member-card" onclick="showResident('Claribel Montague')"><span>Claribel Montague</span><small>Profile to be built →</small></button>
-        <button class="member-card" onclick="showResident('Mattheo Thomas Marvolo Montague')"><span>Mattheo Thomas Marvolo Montague</span><small>Profile to be built →</small></button>
-        <button class="member-card" onclick="showResident('Alexandria Jade Montague')"><span>Alexandria Jade Montague</span><small>Profile to be built →</small></button>
-        <button class="member-card" onclick="showResident('Delphini Violet Montague')"><span>Delphini Violet Montague</span><small>Profile to be built →</small></button>
-      </div>
-    </section>
-    <button class="back" onclick="showPage('families')">← Back to Families</button>
+    <div class="overview-grid"><article class="panel"><h3>Family Overview</h3><p>The Montague family live on the Northside of Hollow's Creek. Much of their wider family history is still being documented in the town archive.</p></article><aside class="panel"><div class="fact"><small>Family</small><strong>Montague</strong></div><div class="fact"><small>Residence</small><strong>Hollow's Creek</strong></div><div class="fact"><small>Area</small><strong>Northside</strong></div><div class="fact"><small>Parents</small><strong>Thomas Marvolo Montague II &amp; Isabella Montague</strong></div></aside></div>
+    <section class="members"><h3>Family Members</h3><div class="member-grid">
+      <button class="member-card" onclick="showResident('Thomas Marvolo Montague II')"><span>Thomas Marvolo Montague II</span><small>Father • profile available →</small></button>
+      <button class="member-card" onclick="showResident('Isabella Montague')"><span>Isabella Montague</span><small>Mother • profile to be built →</small></button>
+      <button class="member-card" onclick="showResident('Thomas Marvolo Montague III')"><span>Thomas Marvolo Montague III</span><small>Profile to be built →</small></button>
+      <button class="member-card" onclick="showResident('Claribel Montague')"><span>Claribel Montague</span><small>Profile to be built →</small></button>
+      <button class="member-card" onclick="showResident('Mattheo Thomas Marvolo Montague')"><span>Mattheo Thomas Marvolo Montague</span><small>Profile to be built →</small></button>
+      <button class="member-card" onclick="showResident('Alexandria Jade Montague')"><span>Alexandria Jade Montague</span><small>Profile to be built →</small></button>
+      <button class="member-card" onclick="showResident('Delphini Violet Montague')"><span>Delphini Violet Montague</span><small>Profile to be built →</small></button>
+    </div></section><button class="back" onclick="showPage('families')">← Back to Families</button>
   </main>
-</section>
-
-`;
+</section>\n\n`;
       html = html.replace('<section id="beaumontFamily" class="page">', montaguePage + '<section id="beaumontFamily" class="page">');
+    } else {
+      html = html.replace('Father • profile to be built →','Father • profile available →');
+    }
+
+    if (!html.includes('id="thomasMontagueIIProfile"')) {
+      const profile = `<section id="thomasMontagueIIProfile" class="page">
+  <div class="profile-head"><div class="crumb">Hollow's Creek → Residents → Montague → Thomas II</div><div class="aka">Montague Family</div><h2>Thomas Marvolo Montague II</h2></div>
+  <main class="becca-profile">
+    <div class="profile-grid">
+      <aside class="bio-panel"><img class="profile-photo" src="thomas-montague-ii-profile.png" alt="Thomas Marvolo Montague II"><h3>Profile</h3><div class="bio-fact"><small>Birthplace</small><strong>England</strong></div><div class="bio-fact"><small>Residence</small><strong>Northside, Hollow's Creek</strong></div><div class="bio-fact"><small>Species</small><strong>Human</strong></div><div class="bio-fact"><small>Wife</small><strong>Isabella Montague</strong></div></aside>
+      <article class="bio-panel"><h3>Family</h3><div class="links-grid"><div class="linkbox"><small>Father</small><div>Thomas Montague</div></div><div class="linkbox"><small>Mother</small><div>Merope Gaunt</div></div><div class="linkbox"><small>Wife</small><div>Isabella Montague</div></div><div class="linkbox"><small>Family</small><div>Montague</div></div></div></article>
+    </div>
+    <section class="profile-section"><h3>Children</h3><div class="chips"><span class="chip">Thomas Marvolo Montague III — son</span><span class="chip">Claribel Montague — daughter</span><span class="chip">Mattheo Thomas Marvolo Montague — son</span><span class="chip">Alexandria Jade Montague — daughter</span><span class="chip">Delphini Violet Montague — daughter</span></div></section>
+    <section class="profile-section"><h3>Extended Family</h3><div class="chips"><span class="chip">Caleb Whitmore</span><span class="chip">Hannah Whitmore</span><span class="chip">Tony Whitmore</span><span class="chip">Lorenzo Whitmore</span><span class="chip">Tate Whitmore</span><span class="chip">Lexie Whitmore</span><span class="chip">Regulus White</span><span class="chip">Evan Rowan</span><span class="chip">Evan Rowan Jr</span></div></section>
+    <button class="back" onclick="showPage('montagueFamily')">← Back to the Montague Family</button>
+  </main>
+</section>\n\n`;
+      html = html.replace('<section id="residentPlaceholder" class="page">', profile + '<section id="residentPlaceholder" class="page">');
+    }
+
+    if (!html.includes("showResident('Thomas Marvolo Montague II')\"><span>Thomas Marvolo Montague II</span><small>Profile available")) {
+      if (!html.includes('<a href="#res-m">M</a>')) html = html.replace('<a href="#res-r">R</a>','<a href="#res-m">M</a><a href="#res-r">R</a>');
+      const mSection = `<section class="letter-group" id="res-m"><div class="letter">M</div><div class="resident-list"><button class="resident-row" onclick="showResident('Thomas Marvolo Montague II')"><span>Thomas Marvolo Montague II</span><small>Profile available →</small></button></div></section>\n    `;
+      html = html.replace('<section class="letter-group" id="res-r">', mSection + '<section class="letter-group" id="res-r">');
     }
 
     document.open();
