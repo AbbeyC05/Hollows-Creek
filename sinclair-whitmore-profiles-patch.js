@@ -14,11 +14,33 @@
     'Lexie Whitmore': {id:'lexieWhitmoreProfile', img:'lexie-whitmore-profile.png', facts:[['Residence',"Hollow's Creek"],['School','L. Beaumont Preparatory']], sections:[['Sibling','Tate Whitmore — twin'],['Relationship','Sienna Power — girlfriend']]}
   };
 
-  const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+  const canonical = {
+    'Harper Beaumont':'Harper Victoria Beaumont',
+    'Rebecca Beaumont':'Rebecca Rose Beaumont',
+    'Lukas Beaumont':'Lukas Henry Beaumont',
+    'Mattheo Montague':'Mattheo Thomas Marvolo Montague',
+    'Theodore Holt IV':'Theodore Alexander Holt IV',
+    'Pansy Walker':'Pansy Hannah Walker'
+  };
+
+  const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const linkableSections = new Set(['Children','Relationships','Relationship','Friends','Sibling','Enemy']);
+
+  function linkedItems(label, text){
+    if(!linkableSections.has(label)) return `<p>${esc(text)}</p>`;
+    return `<div class="chips">${text.split('•').map(raw=>{
+      const item=raw.trim();
+      const display=item;
+      const person=item.split('—')[0].trim();
+      const target=canonical[person] || person;
+      return `<button type="button" class="chip person-link" onclick="showResident('${esc(target).replace(/&#39;/g,"\\'")}')">${esc(display)}</button>`;
+    }).join('')}</div>`;
+  }
+
   function makePage(name,p){
     if(document.getElementById(p.id)) return;
     const sec=document.createElement('section'); sec.id=p.id; sec.className='page';
-    sec.innerHTML=`<div class="profile-head"><div class="crumb">Hollow's Creek → Residents</div>${p.aka?`<div class="aka">${esc(p.aka)}</div>`:''}<h2>${esc(name)}</h2></div><main class="becca-profile"><div class="profile-grid"><aside class="bio-panel"><img class="profile-photo" src="${p.img}" alt="${esc(name)}"><h3>Profile</h3>${p.facts.map(f=>`<div class="bio-fact"><small>${esc(f[0])}</small><strong>${esc(f[1])}</strong></div>`).join('')}</aside><article class="bio-panel"><h3>Overview</h3><p>${esc(name)} is a resident of Hollow's Creek.</p></article></div>${p.sections.map(s=>`<section class="profile-section"><h3>${esc(s[0])}</h3><p>${esc(s[1])}</p></section>`).join('')}<button class="back" onclick="showPage('residents')">← Back to Residents</button></main>`;
+    sec.innerHTML=`<div class="profile-head"><div class="crumb">Hollow's Creek → Residents</div>${p.aka?`<div class="aka">${esc(p.aka)}</div>`:''}<h2>${esc(name)}</h2></div><main class="becca-profile"><div class="profile-grid"><aside class="bio-panel"><img class="profile-photo" src="${p.img}" alt="${esc(name)}"><h3>Profile</h3>${p.facts.map(f=>`<div class="bio-fact"><small>${esc(f[0])}</small><strong>${esc(f[1])}</strong></div>`).join('')}</aside><article class="bio-panel"><h3>Overview</h3><p>${esc(name)} is a resident of Hollow's Creek.</p></article></div>${p.sections.map(s=>`<section class="profile-section"><h3>${esc(s[0])}</h3>${linkedItems(s[0],s[1])}</section>`).join('')}<button class="back" onclick="showPage('residents')">← Back to Residents</button></main>`;
     document.body.appendChild(sec);
   }
   Object.entries(people).forEach(([n,p])=>{if(!p.alias)makePage(n,p)});
