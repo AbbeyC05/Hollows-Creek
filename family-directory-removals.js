@@ -6,20 +6,20 @@
       return;
     }
 
-    const removeNames = new Set([
-      "O'Donnell",
-      'Porter',
-      'Rivera',
-      'Rosetti',
-      'Stone',
-      'White',
-      'Williams',
-      'Wilson'
+    const removeLabels = new Set([
+      "The O'Donnell Family",
+      'The Porter Family',
+      'The Rivera Family',
+      'The Rosetti Family',
+      'The Stone Family',
+      'The White Family',
+      'The Williams Family',
+      'The Wilson Family'
     ]);
 
     familiesPage.querySelectorAll('.family-row').forEach(button => {
-      const match = button.getAttribute('onclick')?.match(/showFamily\('([^']+)'\)/);
-      if (match && removeNames.has(match[1])) button.remove();
+      const label = button.querySelector('span')?.textContent.trim();
+      if (label && removeLabels.has(label)) button.remove();
     });
 
     familiesPage.querySelectorAll('.letter-group').forEach(group => {
