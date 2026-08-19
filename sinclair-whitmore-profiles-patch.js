@@ -14,7 +14,7 @@
     'Lexie Whitmore': {id:'lexieWhitmoreProfile', img:'lexie-whitmore-profile.png', facts:[['Residence',"Hollow's Creek"],['School','L. Beaumont Preparatory']], sections:[['Sibling','Tate Whitmore — twin'],['Relationship','Sienna Power — girlfriend']]}
   };
 
-  const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
   function makePage(name,p){
     if(document.getElementById(p.id)) return;
     const sec=document.createElement('section'); sec.id=p.id; sec.className='page';
@@ -27,12 +27,16 @@
 
   function ensureResident(name){
     const page=document.getElementById('residents'); if(!page)return;
-    const letter=name[0].toUpperCase(); let group=page.querySelector('#resident-letter-'+letter) || page.querySelector('#residents-letter-'+letter);
+    const surname=(name.trim().split(/\s+/).pop()||name); const letter=surname[0].toUpperCase();
+    let group=page.querySelector('#res-'+letter.toLowerCase()) || page.querySelector('#resident-letter-'+letter) || page.querySelector('#residents-letter-'+letter);
     if(!group){
-      group=document.createElement('section'); group.className='letter-group'; group.id='resident-letter-'+letter; group.innerHTML=`<div class="letter">${letter}</div><div class="resident-list"></div>`;
-      const groups=[...page.querySelectorAll('.letter-group')]; const after=groups.find(g=>((g.querySelector('.letter')?.textContent||'Z').trim()>letter)); if(after)after.before(group); else (page.querySelector('.residents-wrap')||page.querySelector('main')||page).appendChild(group);
+      group=document.createElement('section'); group.className='letter-group'; group.id='res-'+letter.toLowerCase(); group.innerHTML=`<div class="letter">${letter}</div><div class="resident-list"></div>`;
+      const wrap=page.querySelector('.residents-wrap')||page.querySelector('main')||page;
+      const groups=[...wrap.querySelectorAll(':scope > .letter-group')]; const after=groups.find(g=>((g.querySelector('.letter')?.textContent||'Z').trim()>letter)); if(after)after.before(group); else wrap.appendChild(group);
     }
-    const list=group.querySelector('.resident-list')||group; if([...list.querySelectorAll('.resident-row')].some(b=>b.textContent.includes(name)))return;
+    const list=group.querySelector('.resident-list')||group;
+    page.querySelectorAll('.resident-row').forEach(b=>{const n=(b.querySelector('span')?.textContent||'').trim(); if(n===name && b.parentElement!==list)b.remove();});
+    if([...list.querySelectorAll('.resident-row')].some(b=>(b.querySelector('span')?.textContent||'').trim()===name))return;
     const b=document.createElement('button'); b.className='resident-row'; b.type='button'; b.onclick=()=>showResident(name); b.innerHTML=`<span>${esc(name)}</span><small>View profile →</small>`; list.appendChild(b);
   }
   function init(){const page=document.getElementById('residents'); if(!page)return setTimeout(init,100); ['Laura Sinclair','Samuel Sinclair','April Sinclair','Sadie Sinclair','Austin Sinclair','Caleb Whitmore','Hannah Whitmore','Tony Whitmore','Lorenzo Whitmore','Tate Whitmore','Lexie Whitmore'].forEach(ensureResident);}
