@@ -1,7 +1,7 @@
 (() => {
   const people = {
     'Caroline Lovell': {
-      id:'carolineLovellProfile', img:'caroline-lovell-profile.png', facts:[['Born','1975'],['Birthplace','Marbella, Spain'],['Residence',"Northside, Hollow's Creek"],['Species','Human']], sections:[['Family',['Caity Lovell — sister']],['Relationship',['Lukas Beaumont III — boyfriend']]]
+      id:'carolineLovellProfile', img:'caroline-lovell-profile.png', facts:[['Born','1975'],['Birthplace','Marbella, Spain'],['Residence',"Northside, Hollow's Creek"],['Species','Human']], sections:[['Family',['Caity Lovell — sister']],['Relationship',['Lukas Beaumont Jr — boyfriend']]]
     },
     'Caity Lovell': {
       id:'caityLovellProfile', img:'caity-lovell-profile.png', facts:[['Born','1980'],['Birthplace','Marbella, Spain'],['Residence',"Northside, Hollow's Creek"],['Species','Human']], sections:[['Relationship',['Jaden Pritchard — boyfriend']],['Friends',['Rebecca Beaumont']]]
