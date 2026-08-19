@@ -154,19 +154,22 @@
       }
 
       const residents = document.getElementById('residents');
-      if (residents) {
-        let h = [...residents.querySelectorAll('h2,h3,h4')].find(x => x.textContent.trim()==='J');
-        let section = h && h.parentElement;
-        if (!section) {
-          const allSections=[...residents.querySelectorAll('section,.resident-section,.letter-section')];
-          section=document.createElement('section'); section.className='resident-section letter-section'; section.innerHTML='<h3>J</h3><div class="member-grid resident-grid"></div>';
-          const next=[...residents.querySelectorAll('h2,h3,h4')].find(x => x.textContent.trim()>'J');
-          if(next && next.parentElement) next.parentElement.before(section); else (residents.querySelector('main')||residents).appendChild(section);
-        }
-        const grid=section.querySelector('.member-grid,.resident-grid,.directory-grid') || section;
+      const wrap = residents && residents.querySelector('.residents-wrap');
+      if (residents && wrap) {
+        residents.querySelectorAll('.resident-section.letter-section').forEach(section => section.remove());
         Object.keys(residentPages).forEach(name => {
-          [...residents.querySelectorAll('button')].filter(b=>b.textContent.trim().startsWith(name)).forEach(b=>b.remove());
-          const b=document.createElement('button'); b.className='member-card'; b.onclick=()=>showResident(name); b.innerHTML=`<span>${name}</span><small>View profile →</small>`; grid.appendChild(b);
+          [...residents.querySelectorAll('button')].filter(b => {
+            const text=(b.querySelector('span')?.textContent || b.textContent).trim();
+            return text===name && !b.classList.contains('resident-row');
+          }).forEach(b=>b.remove());
+          if (![...wrap.querySelectorAll('.resident-row')].some(b => (b.querySelector('span')?.textContent || '').trim()===name)) {
+            const b=document.createElement('button');
+            b.className='resident-row';
+            b.type='button';
+            b.onclick=()=>showResident(name);
+            b.innerHTML=`<span>${name}</span><small>View profile →</small>`;
+            wrap.appendChild(b);
+          }
         });
       }
     };
