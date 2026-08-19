@@ -25,7 +25,7 @@
       return surname.charAt(0).toUpperCase();
     };
 
-    // Gather every existing resident row before rebuilding the alphabetical grouping.
+    // Gather every resident row, including any rows accidentally placed outside the real directory wrapper.
     const rows = [...page.querySelectorAll('.resident-row')];
     const unique = new Map();
     rows.forEach(row => {
@@ -33,8 +33,14 @@
       if (name && !unique.has(name)) unique.set(name, row);
     });
 
-    // Remove all current resident letter groups so nothing can stay under a first-name letter.
-    [...wrap.querySelectorAll(':scope > .letter-group')].forEach(group => group.remove());
+    // Remove EVERY letter group on the Residents page. This clears malformed groups such as J appearing above the header.
+    [...page.querySelectorAll('.letter-group')].forEach(group => group.remove());
+
+    // Make sure the directory wrapper itself is below the Residents hero and above the footer.
+    const hero = page.querySelector('.section-hero');
+    const footer = page.querySelector('footer');
+    if (hero && wrap.previousElementSibling !== hero) hero.insertAdjacentElement('afterend', wrap);
+    if (footer && footer.previousElementSibling !== wrap) wrap.insertAdjacentElement('afterend', footer);
 
     const grouped = new Map();
     unique.forEach((row, name) => {
@@ -65,9 +71,9 @@
         a.textContent = letter;
         az.appendChild(a);
       });
+      wrap.insertBefore(az, wrap.firstChild);
     }
   };
 
-  // Run after every family/profile patch has finished adding residents.
-  setTimeout(fixResidentsAlphabet, 1200);
+  setTimeout(fixResidentsAlphabet, 1400);
 })();
