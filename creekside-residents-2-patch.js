@@ -1,45 +1,84 @@
 (() => {
-  const profiles = {
-    'Harry Porter': { born:'1980', species:'Human', residence:"Hollow's Creek, Southside", school:'Creekside High', girlfriend:'Georgia Carter', family:'Unnamed Younger Brother — brother', friends:['Samuel Sinclair','David Jones','John Wilson','Joseph Miller','Max Ford','Felix Brown','Clarke Hudson','Poppy Carter'] },
-    'Max Ford': { born:'1980', species:'Human', residence:"Hollow's Creek, Southside", school:'Creekside High', girlfriend:'Piper Ellwood', family:'Kasey Ford — sister', friends:['Samuel Sinclair','David Jones','John Wilson','Joseph Miller','Harry Porter','Felix Brown','Clarke Hudson'] },
-    'Clarke Hudson': { born:'1980', species:'Human', residence:"Hollow's Creek, Southside", school:'Creekside High', girlfriend:'Kasey Ford', friends:['Samuel Sinclair','David Jones','John Wilson','Joseph Miller','Max Ford','Felix Brown','Harry Porter'] },
-    'Molly Winter': { born:'1980', species:'Human', residence:"Hollow's Creek, Southside", school:'Creekside High', ex:'Samuel Sinclair' },
-    'Piper Ellwood': { born:'1980', species:'Human', residence:"Hollow's Creek, Southside", school:'Creekside High', boyfriend:'Max Ford', friends:['Poppy Carter','Georgia Carter','Kasey Ford'] },
-    'Kasey Ford': { born:'1981', species:'Human', residence:"Hollow's Creek, Southside", school:'Creekside High', boyfriend:'Clarke Hudson', family:'Max Ford — brother', friends:['Poppy Carter','Georgia Carter','Piper Ellwood'] }
+  const people = {
+    'Harry Porter': {
+      id:'harryPorterProfile',
+      facts:[['Born','1980'],['Residence',"Southside, Hollow's Creek"],['Education','Creekside High'],['Species','Human']],
+      sections:[['Relationship',['Georgia Carter — girlfriend']],['Family',['Unnamed younger brother']],['Friends',['Samuel Sinclair','David Jones','John Wilson','Joseph Miller','Max Ford','Felix Brown','Clarke Hudson','Poppy Carter']]]
+    },
+    'Max Ford': {
+      id:'maxFordProfile',
+      facts:[['Born','1980'],['Residence',"Southside, Hollow's Creek"],['Education','Creekside High'],['Species','Human']],
+      sections:[['Relationship',['Piper Ellwood — girlfriend']],['Siblings',['Kasey Ford — sister']],['Friends',['Samuel Sinclair','David Jones','John Wilson','Joseph Miller','Harry Porter','Felix Brown','Clarke Hudson']]]
+    },
+    'Clarke Hudson': {
+      id:'clarkeHudsonProfile',
+      facts:[['Born','1980'],['Residence',"Southside, Hollow's Creek"],['Education','Creekside High'],['Species','Human']],
+      sections:[['Relationship',['Kasey Ford — girlfriend']],['Friends',['Samuel Sinclair','David Jones','John Wilson','Joseph Miller','Max Ford','Felix Brown','Harry Porter']]]
+    },
+    'Molly Winter': {
+      id:'mollyWinterProfile',
+      facts:[['Born','1980'],['Residence',"Southside, Hollow's Creek"],['Education','Creekside High'],['Species','Human']],
+      sections:[['Relationships',['Samuel Sinclair — ex']]]
+    },
+    'Piper Ellwood': {
+      id:'piperEllwoodProfile',
+      facts:[['Born','1980'],['Residence',"Southside, Hollow's Creek"],['Education','Creekside High'],['Species','Human']],
+      sections:[['Relationship',['Max Ford — boyfriend']],['Friends',['Poppy Carter','Georgia Carter','Kasey Ford']]]
+    },
+    'Kasey Ford': {
+      id:'kaseyFordProfile',
+      facts:[['Born','1981'],['Residence',"Southside, Hollow's Creek"],['Education','Creekside High'],['Species','Human']],
+      sections:[['Relationship',['Clarke Hudson — boyfriend']],['Siblings',['Max Ford — brother']],['Friends',['Poppy Carter','Georgia Carter','Piper Ellwood']]]
+    }
   };
-  const slug = n => n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-  const link = n => `<a href="#resident-${slug(n)}">${n}</a>`;
-  const links = arr => (arr||[]).map(link).join(', ');
-  const card = (label,val) => val ? `<div class="detail-card"><div class="detail-label">${label}</div><div class="detail-value">${val}</div></div>` : '';
-  const render = (name,p) => `<section id="resident-${slug(name)}" class="resident-profile" style="display:none"><div class="profile-shell"><p class="eyebrow">HOLLOW'S CREEK → RESIDENT</p><h1>${name}</h1><div class="detail-grid">${card('Born',p.born)}${card('Species',p.species)}${card('Residence',p.residence)}${card('School',p.school)}${card('Family',p.family)}${card('Boyfriend',p.boyfriend&&link(p.boyfriend))}${card('Girlfriend',p.girlfriend&&link(p.girlfriend))}${card('Ex',p.ex&&link(p.ex))}${card('Friends',links(p.friends))}</div></div></section>`;
-  function addProfiles(){
-    const host=document.querySelector('main')||document.body;
-    Object.entries(profiles).forEach(([n,p])=>{ if(!document.getElementById('resident-'+slug(n))) host.insertAdjacentHTML('beforeend',render(n,p)); });
+
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const chips=items=>items.map(item=>`<span class="chip">${esc(item)}</span>`).join('');
+
+  function makePage(name,p){
+    if(document.getElementById(p.id)) return;
+    const page=document.createElement('section');
+    page.id=p.id;
+    page.className='page';
+    page.innerHTML=`<div class="profile-head"><div class="crumb">Hollow's Creek → Residents → ${esc(name)}</div><div class="aka">Resident Profile</div><h2>${esc(name)}</h2></div><main class="becca-profile"><div class="profile-grid"><aside class="bio-panel"><h3>Profile</h3>${p.facts.map(([k,v])=>`<div class="bio-fact"><small>${esc(k)}</small><strong>${esc(v)}</strong></div>`).join('')}</aside><article class="bio-panel"><h3>Overview</h3><p>${esc(name)} is a resident of Hollow's Creek.</p></article></div>${p.sections.map(([title,items])=>`<section class="profile-section"><h3>${esc(title)}</h3><div class="chips">${chips(items)}</div></section>`).join('')}<button class="back" onclick="showPage('residents')">← Back to Residents</button></main>`;
+    document.getElementById('beaumontFamily')?.before(page) || document.body.appendChild(page);
   }
-  function addDirectory(){
-    const residents=[...document.querySelectorAll('a[href*="#resident-"]')];
-    const directory=document.querySelector('#residents, [id="residents-directory"], .residents-directory') || residents[0]?.closest('section');
-    if(!directory) return;
-    Object.keys(profiles).forEach(name=>{
-      if(directory.querySelector(`a[href="#resident-${slug(name)}"]`)) return;
-      const box=document.createElement('div'); box.className='resident-card'; box.dataset.surname=name.trim().split(/\s+/).pop();
-      box.innerHTML=`<a href="#resident-${slug(name)}"><strong>${name}</strong><span>VIEW PROFILE →</span></a>`;
-      directory.appendChild(box);
+
+  function install(){
+    if(typeof window.showResident!=='function'||typeof window.showPage!=='function'||!document.getElementById('residents')) return setTimeout(install,80);
+    Object.entries(people).forEach(([name,p])=>makePage(name,p));
+
+    const old=window.showResident;
+    if(!window.__creeksideResidents2Routing){
+      window.showResident=function(name){
+        if(people[name]) return window.showPage(people[name].id);
+        return old(name);
+      };
+      window.__creeksideResidents2Routing=true;
+    }
+
+    const wrap=document.querySelector('#residents .residents-wrap');
+    if(!wrap) return;
+    let holding=wrap.querySelector('#creekside-residents-2');
+    if(!holding){
+      holding=document.createElement('section');
+      holding.id='creekside-residents-2';
+      holding.className='letter-group';
+      holding.innerHTML='<div class="letter">?</div><div class="resident-list"></div>';
+      wrap.appendChild(holding);
+    }
+    const list=holding.querySelector('.resident-list');
+    Object.keys(people).forEach(name=>{
+      [...wrap.querySelectorAll('.resident-row')].forEach(btn=>{
+        if((btn.querySelector('span')?.textContent||'').trim()===name) btn.remove();
+      });
+      const b=document.createElement('button');
+      b.className='resident-row';
+      b.type='button';
+      b.onclick=()=>window.showResident(name);
+      b.innerHTML=`<span>${esc(name)}</span><small>Profile available →</small>`;
+      list.appendChild(b);
     });
   }
-  function showHash(){
-    const id=location.hash.slice(1); if(!id.startsWith('resident-')) return;
-    document.querySelectorAll('.resident-profile').forEach(x=>x.style.display='none');
-    const el=document.getElementById(id); if(el){el.style.display='block'; el.scrollIntoView({block:'start'});}
-  }
-  function reciprocal(){
-    const pairs={
-      'Georgia Carter':['Harry Porter'], 'Samuel Sinclair':['Harry Porter','Max Ford','Clarke Hudson'], 'David Jones':['Harry Porter','Max Ford','Clarke Hudson'], 'John Wilson':['Harry Porter','Max Ford','Clarke Hudson'], 'Joseph Miller':['Harry Porter','Max Ford','Clarke Hudson'], 'Felix Brown':['Harry Porter','Max Ford','Clarke Hudson'], 'Poppy Carter':['Harry Porter','Piper Ellwood','Kasey Ford'], 'Max Ford':['Harry Porter','Clarke Hudson'], 'Clarke Hudson':['Harry Porter','Max Ford'], 'Piper Ellwood':['Max Ford','Kasey Ford'], 'Kasey Ford':['Clarke Hudson','Piper Ellwood'], 'Samuel Sinclair':['Molly Winter','Harry Porter','Max Ford','Clarke Hudson']
-    };
-    // Existing global reciprocal-profile-links.js handles most reverse rendering; this map is exposed for it/future patches.
-    window.HollowsCreekReciprocalAdditions=Object.assign(window.HollowsCreekReciprocalAdditions||{},pairs);
-  }
-  function init(){addProfiles();addDirectory();reciprocal();showHash();}
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
-  addEventListener('hashchange',showHash);
+  install();
 })();
