@@ -18,14 +18,8 @@ fetch('site-base.html?v=2')
     const loadScript = (src, label) => new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = src;
-      script.onload = () => {
-        console.log(label + ' loaded');
-        resolve();
-      };
-      script.onerror = () => {
-        console.error('Could not load ' + src);
-        reject(new Error('Could not load ' + src));
-      };
+      script.onload = () => { console.log(label + ' loaded'); resolve(); };
+      script.onerror = () => { console.error('Could not load ' + src); reject(new Error('Could not load ' + src)); };
       document.body.appendChild(script);
     });
 
@@ -54,6 +48,7 @@ fetch('site-base.html?v=2')
       await loadScript('standalone-residents-patch.js?v=2', 'Standalone resident profiles');
       await loadScript('wilson-burr-residents-patch.js?v=1', 'Wilson and Burr resident profiles');
       await loadScript('hardly-richardson-residents-patch.js?v=1', 'Hardly and Richardson resident profiles');
+      await loadScript('creekside-residents-2-patch.js?v=1', 'Additional Creekside resident profiles');
       await loadScript('residents-alphabet-fix.js?v=6', 'Residents alphabet fix');
       await loadScript('family-directory-removals.js?v=2', 'Unused family directory removals');
       await loadScript('profile-auto-links.js?v=1', 'Global resident profile links');
@@ -61,11 +56,8 @@ fetch('site-base.html?v=2')
       await loadScript('piper-ellwood-name-fix.js?v=1', 'Piper Ellwood spelling fix');
     };
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => loadAllPatches().catch(console.error), { once: true });
-    } else {
-      loadAllPatches().catch(console.error);
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => loadAllPatches().catch(console.error), { once: true });
+    else loadAllPatches().catch(console.error);
   })
   .catch(err => {
     document.body.innerHTML = '<p style="padding:30px;font-family:Arial">The Hollow\'s Creek archive could not load. Please refresh the page.</p>';
