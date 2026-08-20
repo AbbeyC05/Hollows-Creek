@@ -1,42 +1,52 @@
 (() => {
+  const fallbackData={
+    rbmaArchive:{title:'Rebecca Beaumont Music Academy',type:'Music Education',site:'rbmaWebsite',summary:'Rebecca Beaumont’s music academy in Hollow’s Creek, focused on accessible professional tuition, scholarships, instruments, songwriting, performance and recording opportunities.'},
+    rbPublishingArchive:{title:'RB Music Publishing',type:'Publishing & Songwriting',site:'rbPublishingWebsite',summary:'Rebecca Beaumont’s publishing company supporting songwriters with development, administration, licensing, catalogue management, sync and creative pitching.'},
+    beaumontStudiosArchive:{title:'Beaumont Studios',type:'Recording & Production',site:'beaumontStudiosWebsite',summary:'Professional recording, rehearsal and creative studios in Hollow’s Creek offering full production, vocal recording, band sessions, writing rooms and private lockouts.'},
+    beccaStoreArchive:{title:'Rebecca Beaumont Official Store',type:'Music Merchandise',site:'beccaStoreWebsite',summary:'The official Rebecca Beaumont music store for albums, apparel, tour merchandise, accessories, collectibles and fan products.'}
+  };
+
+  function ensureArchive(id){
+    if(document.getElementById(id)) return;
+    const d=fallbackData[id]; if(!d) return;
+    const p=document.createElement('section'); p.id=id; p.className='page';
+    p.innerHTML=`<div class="profile-head"><div class="crumb">Businesses → ${d.type}</div><div class="aka">Business Archive</div><h2>${d.title}</h2></div><main class="imperium-archive"><p style="font:16px/1.75 Arial;color:#625d56">${d.summary}</p><div class="imperium-facts"><div class="imperium-fact"><small>Owner / Founder</small><strong>Rebecca Beaumont</strong></div><div class="imperium-fact"><small>Base</small><strong>Hollow's Creek</strong></div><div class="imperium-fact"><small>Status</small><strong>Operating</strong></div><div class="imperium-fact"><small>Brand</small><strong>Beaumont</strong></div></div><button class="visit-site" onclick="safeBusinessOpen('${d.site}')">Visit Official Website →</button> <button class="back" onclick="showPage('businesses')">← Back to Businesses</button></main>`;
+    document.body.appendChild(p);
+  }
+
+  function ensureSite(id){
+    if(document.getElementById(id)) return;
+    const themes={
+      rbmaWebsite:{brand:'RBMA',title:'Music belongs to everyone.',bg:'#fff7f8',ink:'#5e3844',accent:'#f4c7d4',sections:[['Programmes','Voice, piano, guitar, drums, strings, songwriting, performance company and early-years music.'],['Scholarships','Full and partial tuition support, instrument loans, travel help and showcase funding.'],['Admissions','Year-round applications, beginner-friendly entry and placement based on goals rather than polish.'],['Showcase','An annual professional-stage performance with rehearsals, lighting, sound and family ticket allocations.'],['Welcome Pack','Timetables, teacher contacts, practice guidance, safeguarding, instrument care and first-day information.'],['Facilities','Teaching rooms, rehearsal rooms, piano rooms, songwriting spaces and access to Beaumont Studios.']]},
+      rbPublishingWebsite:{brand:'RB Music Publishing',title:'Songs deserve somewhere to go.',bg:'#f7f1e7',ink:'#1a1a1a',accent:'#171717',sections:[['Songwriter Development','One-to-one development, co-writing introductions, demo feedback and long-term creative planning.'],['Publishing Administration','Registration, royalty tracking, catalogue records, split sheets and rights administration.'],['Sync & Licensing','Music pitching for film, television, advertising and live productions.'],['Catalogue','A managed catalogue of songs written by Rebecca Beaumont and signed writers.'],['Submissions','Structured songwriter submissions for demos, lyrics and complete compositions.'],['Creative Services','Demo production, arrangement guidance and connections into Beaumont Studios.']]},
+      beaumontStudiosWebsite:{brand:'Beaumont Studios',title:'Make it sound like you.',bg:'#111214',ink:'#f1ece7',accent:'#6b1d2c',sections:[['Studio A','Flagship live room for bands, strings and full production sessions.'],['Studio B','Vocal and pop production suite for singers, demos and overdubs.'],['Writing Rooms','Private piano and songwriting rooms for artists, writers and producers.'],['Rehearsal','Fully equipped rehearsal rooms for bands, tours and showcase preparation.'],['Production','Recording, editing, arrangement, mixing and session musician coordination.'],['Private Lockouts','Discreet long-term studio access for high-profile artists and confidential projects.']]},
+      beccaStoreWebsite:{brand:'Rebecca Beaumont Official Store',title:'Wear the era. Keep the music.',bg:'#fff8f7',ink:'#5a2332',accent:'#f2c8d0',sections:[['Music','Albums, singles, collector editions, signed formats and limited releases.'],['Apparel','Tour hoodies, tees, sweatshirts, jackets and era-specific clothing.'],['Tour Merch','Tour programmes, posters, photo sets, lanyards and venue-exclusive items.'],['Accessories','Bows, jewellery, bags, keyrings, notebooks and small fan pieces.'],['Collectibles','Signed prints, limited boxes, lyric cards and numbered memorabilia.'],['Gift Shop','Bundles, birthday gifts, stocking fillers and fan starter packs.']]}
+    };
+    const d=themes[id]; if(!d) return;
+    const p=document.createElement('section'); p.id=id; p.className='page'; p.style.background=d.bg; p.style.color=d.ink; p.style.minHeight='100vh';
+    const cards=d.sections.map((s,i)=>`<div style="padding:24px;border:1px solid rgba(0,0,0,.14);background:rgba(255,255,255,.62);min-height:180px"><small style="font:10px Arial;letter-spacing:.13em;text-transform:uppercase">0${i+1}</small><h3 style="font:26px Georgia;margin:8px 0">${s[0]}</h3><p style="font:13px/1.65 Arial">${s[1]}</p><button onclick="businessDetail('${id}','${s[0].replace(/'/g,"\\'")}')" style="margin-top:12px;padding:10px 12px;border:1px solid currentColor;background:transparent;cursor:pointer">Explore →</button></div>`).join('');
+    p.innerHTML=`<div style="position:sticky;top:0;z-index:30;padding:16px 5vw;background:${d.accent};display:flex;justify-content:space-between;align-items:center"><strong style="font:24px Georgia">${d.brand}</strong><button onclick="showPage('businesses')" style="background:transparent;border:0;color:inherit;cursor:pointer">Hollow's Creek Archive ↗</button></div><section style="padding:85px 7vw 65px;max-width:1180px;margin:auto"><div style="font:11px Arial;letter-spacing:.2em;text-transform:uppercase">Rebecca Beaumont • Hollow's Creek</div><h1 style="font:italic clamp(50px,8vw,92px) Georgia;margin:16px 0">${d.title}</h1><p style="font:16px/1.75 Arial;max-width:760px">A full Beaumont business site with services, pricing context, policies, enquiries and in-universe customer information.</p><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:40px">${cards}</div></section><section style="padding:55px 7vw;background:${d.accent}"><h2 style="font:italic 42px Georgia;margin:0 0 10px">Built around Rebecca Beaumont’s creative world.</h2><p style="font:14px/1.7 Arial;max-width:760px">This business connects directly with her wider music career, with cross-links to the academy, publishing arm, recording studios and official merchandise operation.</p></section>`;
+    document.body.appendChild(p);
+  }
+
+  window.businessDetail=function(site,label){
+    const id='businessDetailPage'; let p=document.getElementById(id); if(!p){p=document.createElement('section');p.id=id;p.className='page';document.body.appendChild(p)}
+    p.innerHTML=`<div class="section-hero"><div class="crumb">Business Website → ${label}</div><h2>${label}</h2><p>Detailed service information, booking guidance, pricing notes, policies and enquiries for this part of the business.</p></div><div class="wrap"><div class="overview-grid"><div class="panel"><h3>What it includes</h3><p>Personal consultation, tailored planning, premium Beaumont service standards and access to related departments where appropriate.</p></div><div class="panel"><h3>Enquiries</h3><p>Availability and pricing are confirmed individually for specialist, private or bespoke work.</p></div></div><button class="back" onclick="showPage('${site}')">← Back to Website</button></div>`; showPage(id);
+  };
+
+  window.safeBusinessOpen=function(id){
+    if(fallbackData[id]) ensureArchive(id);
+    if(['rbmaWebsite','rbPublishingWebsite','beaumontStudiosWebsite','beccaStoreWebsite'].includes(id)) ensureSite(id);
+    const target=document.getElementById(id);
+    if(target) showPage(id); else showPage('businesses');
+  };
+
   function installBusinessDirectory(){
-    const page=document.getElementById('businesses');
-    if(!page) return;
-    page.innerHTML=`
-      <div class="section-hero">
-        <div class="crumb">Hollow's Creek → Businesses</div>
-        <h2>Businesses</h2>
-        <p>Companies, brands, venues and creative ventures connected to the people of Hollow's Creek.</p>
-      </div>
-      <div class="wrap">
-        <div class="biz-grid">
-          <button class="biz-card" onclick="showPage('imperiumArchive')"><small>Hospitality • Est. 1994</small><strong>Beaumont Imperium Hotel</strong><p>Rebecca Beaumont's luxury Hollow's Creek hotel, dining, spa, wedding and events destination.</p></button>
-          <button class="biz-card" onclick="showPage('rbmaArchive')"><small>Music Education</small><strong>Rebecca Beaumont Music Academy</strong><p>Accessible professional music tuition, scholarships, instruments, performance training and annual showcases.</p></button>
-          <button class="biz-card" onclick="showPage('rbPublishingArchive')"><small>Publishing • Songwriting</small><strong>RB Music Publishing</strong><p>Songwriter development, publishing administration, catalogue management, sync and licensing.</p></button>
-          <button class="biz-card" onclick="showPage('beaumontStudiosArchive')"><small>Recording • Production</small><strong>Beaumont Studios</strong><p>Professional recording, production, rehearsal and creative studios in Hollow's Creek.</p></button>
-          <button class="biz-card" onclick="showPage('beccaStoreArchive')"><small>Rebecca Beaumont Music</small><strong>Rebecca Beaumont Official Store</strong><p>Official albums, apparel, tour merchandise, accessories, collectibles and fan merchandise.</p></button>
-        </div>
-        <button class="back" onclick="showPage('home')">← Back to Home</button>
-      </div>`;
+    const page=document.getElementById('businesses'); if(!page) return;
+    page.innerHTML=`<div class="section-hero"><div class="crumb">Hollow's Creek → Businesses</div><h2>Businesses</h2><p>Companies, brands, venues and creative ventures connected to the people of Hollow's Creek.</p></div><div class="wrap"><div class="biz-grid"><button class="biz-card" onclick="showPage('imperiumArchive')"><small>Hospitality • Est. 1994</small><strong>Beaumont Imperium Hotel</strong><p>Rebecca Beaumont's luxury hotel, dining, spa, wedding and events destination.</p></button><button class="biz-card" onclick="safeBusinessOpen('rbmaArchive')"><small>Music Education</small><strong>Rebecca Beaumont Music Academy</strong><p>Professional tuition, scholarships, instruments, performance training and annual showcases.</p></button><button class="biz-card" onclick="safeBusinessOpen('rbPublishingArchive')"><small>Publishing • Songwriting</small><strong>RB Music Publishing</strong><p>Songwriter development, publishing administration, catalogue management, sync and licensing.</p></button><button class="biz-card" onclick="safeBusinessOpen('beaumontStudiosArchive')"><small>Recording • Production</small><strong>Beaumont Studios</strong><p>Professional recording, production, rehearsal and creative studios.</p></button><button class="biz-card" onclick="safeBusinessOpen('beccaStoreArchive')"><small>Rebecca Beaumont Music</small><strong>Rebecca Beaumont Official Store</strong><p>Albums, apparel, tour merchandise, accessories and collectibles.</p></button></div><button class="back" onclick="showPage('home')">← Back to Home</button></div>`;
   }
 
-  function linkBeccaProfile(){
-    const ids=['rebeccaBeaumont','rebecca-beaumont','beccaProfile','rebeccaProfile'];
-    let profile=ids.map(id=>document.getElementById(id)).find(Boolean);
-    if(!profile){
-      profile=[...document.querySelectorAll('.page')].find(el=>/Rebecca Rose Beaumont/i.test(el.textContent||'') && /profile/i.test(el.textContent||''));
-    }
-    if(!profile || profile.querySelector('[data-becca-businesses]')) return;
-    const target=profile.querySelector('main,.profile-body,.profile-content,.wrap') || profile;
-    const box=document.createElement('section');
-    box.setAttribute('data-becca-businesses','true');
-    box.style.margin='28px 0';
-    box.innerHTML=`<h3 style="font:30px Georgia,serif;font-weight:400;margin:0 0 14px">Businesses</h3><div class="rb-archive-grid"><button class="rb-archive-card" onclick="showPage('imperiumArchive')"><small>Hospitality</small><strong>Beaumont Imperium Hotel</strong></button><button class="rb-archive-card" onclick="showPage('rbmaArchive')"><small>Music Education</small><strong>Rebecca Beaumont Music Academy</strong></button><button class="rb-archive-card" onclick="showPage('rbPublishingArchive')"><small>Publishing</small><strong>RB Music Publishing</strong></button><button class="rb-archive-card" onclick="showPage('beaumontStudiosArchive')"><small>Recording</small><strong>Beaumont Studios</strong></button><button class="rb-archive-card" onclick="showPage('beccaStoreArchive')"><small>Official Merchandise</small><strong>Rebecca Beaumont Official Store</strong></button></div>`;
-    target.appendChild(box);
-  }
-
-  function run(){ installBusinessDirectory(); linkBeccaProfile(); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(run,100),{once:true});
-  else setTimeout(run,100);
+  function run(){installBusinessDirectory();Object.keys(fallbackData).forEach(ensureArchive)}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(run,100),{once:true}); else setTimeout(run,100);
   setTimeout(run,700);
 })();
