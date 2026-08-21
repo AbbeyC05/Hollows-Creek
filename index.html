@@ -7,9 +7,7 @@
 <script>
 fetch('site-base.html?v=2').then(r=>{if(!r.ok)throw new Error('Could not load site-base.html');return r.text()}).then(html=>{document.open();document.write(html);document.close();const loadScript=(src,label)=>new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=src;script.onload=()=>{console.log(label+' loaded');resolve()};script.onerror=()=>{console.error('Could not load '+src);resolve()};document.body.appendChild(script)});
 const loadAllPatches=async()=>{
-// Businesses are user-facing primary navigation, so load them FIRST rather than making them wait behind every resident profile.
 await loadScript('beaumont-businesses-hotel-patch.js?v=5','Beaumont businesses and Imperium Hotel');
-// The business stack has a few intentional dependencies. Keep those ordered, but it can run alongside resident/family data.
 const businessStack=(async()=>{
  await loadScript('imperium-photos-enhancement.js?v=1','Imperium hotel photography');
  await loadScript('becca-businesses-full-patch.js?v=2','Rebecca Beaumont full business websites');
@@ -20,13 +18,12 @@ const businessStack=(async()=>{
  await loadScript('beaumont-enterprises-website.js?v=1','Beaumont Enterprises corporate website');
  await loadScript('beaumont-enterprises-canon-fix.js?v=1','Beaumont Enterprises canon correction');
  await loadScript('beaumont-sound-charlie.js?v=1','Charlie Beaumont Sound website');
+ await loadScript('beaumont-sessions-archive.js?v=1','The Beaumont Sessions complete archive');
 })();
-// Independent profile/family patches no longer block each other or the business websites.
 const profileStack=Promise.all([
  loadScript('site-patches.js?v=5','Main Montague profiles'),loadScript('alexandria-profile-patch.js?v=3','Alexandria Montague profile'),loadScript('delphini-profile-patch.js?v=2','Delphini Montague profile'),loadScript('holt-family-patch.js?v=3','Holt family page'),loadScript('holt-profiles-patch.js?v=1','Holt resident profiles'),loadScript('bardot-family-patch.js?v=1','Bardot family page'),loadScript('bardot-profiles-patch.js?v=1','Bardot resident profiles'),loadScript('blakely-brown-patch.js?v=1','Blakely and Brown families'),loadScript('carter-family-patch.js?v=4','Carter family and resident profiles'),loadScript('patterson-walker-daniels-patch.js?v=2','Patterson Walker and Daniels families'),loadScript('patterson-walker-photo-fix.js?v=1','Annabella and Steven profile photos'),loadScript('dickson-davis-dunn-ryder-patch.js?v=1','Dickson Davis Dunn and Ryder families'),loadScript('edwards-ellis-ellington-patch.js?v=1','Edwards Ellis and Ellington families'),loadScript('foster-family-patch.js?v=1','Foster family and profiles'),loadScript('graves-family-patch.js?v=1','Graves family and profiles'),loadScript('hall-hartley-family-patch.js?v=1','Hall and Hartley families'),loadScript('jackson-johnson-jones-family-patch.js?v=2','Jackson Johnson and Jones families'),loadScript('lepton-family-patch.js?v=1','Lepton family and Levi profile'),loadScript('madden-miller-family-patch.js?v=1','Madden and Miller families'),loadScript('sinclair-whitmore-family-patch.js?v=1','Sinclair and Whitmore families'),loadScript('sinclair-whitmore-profiles-patch.js?v=2','Sinclair and Whitmore resident profiles'),loadScript('standalone-residents-patch.js?v=2','Standalone resident profiles'),loadScript('wilson-burr-residents-patch.js?v=1','Wilson and Burr resident profiles'),loadScript('hardly-richardson-residents-patch.js?v=1','Hardly and Richardson resident profiles'),loadScript('creekside-residents-2-patch.js?v=3','Additional Creekside resident profiles')
 ]);
 await Promise.all([businessStack,profileStack]);
-// These scan/normalise profiles, so deliberately run after all profile creation is complete.
 await loadScript('residents-alphabet-fix.js?v=6','Residents alphabet fix');
 await loadScript('family-directory-removals.js?v=2','Unused family directory removals');
 await loadScript('profile-auto-links.js?v=1','Global resident profile links');
