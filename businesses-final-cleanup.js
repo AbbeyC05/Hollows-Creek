@@ -1,4 +1,5 @@
 (()=>{
+let theatreSelected=false;
 function primaryGrid(biz){
   return biz.querySelector('.wrap > .biz-grid')||biz.querySelector('.biz-grid')||biz.querySelector('.business-grid')||biz.querySelector('.directory-grid')||biz.querySelector('.directory')||biz.querySelector('.grid');
 }
@@ -24,6 +25,27 @@ function ensureStoryhouse(biz){
   const h=document.getElementById('harperProfile');
   if(h){const links=[...h.querySelectorAll('button')].filter(x=>/Storyhouse/i.test(x.textContent||''));links.forEach(b=>b.onclick=()=>showPage('storyhouseBusiness'))}
 }
+function installTheatreGuard(){
+  if(window.__theatreGuardInstalled)return;
+  window.__theatreGuardInstalled=true;
+  const originalShowPage=window.showPage;
+  window.showPage=function(id){
+    theatreSelected=id==='beaumontTheatre';
+    const result=originalShowPage(id);
+    if(theatreSelected){
+      const p=document.getElementById('beaumontTheatre');
+      if(p)p.classList.add('active');
+    }
+    return result;
+  };
+  const observer=new MutationObserver(()=>{
+    if(!theatreSelected)return;
+    const p=document.getElementById('beaumontTheatre');
+    if(p&&!p.classList.contains('active'))p.classList.add('active');
+  });
+  observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
+}
 function fix(){const biz=document.getElementById('businesses');if(!biz)return;ensureTheatre(biz);ensureStoryhouse(biz)}
+installTheatreGuard();
 [800,1800,3200,3800,5000,7500,10000,14000,18000].forEach(t=>setTimeout(fix,t));
 })();
