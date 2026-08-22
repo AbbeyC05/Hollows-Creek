@@ -4,8 +4,11 @@ const POSTERS=[
 ];
 function theatrePage(){
  let p=document.getElementById('beaumontTheatre');
- if(!p){p=document.createElement('section');p.id='beaumontTheatre';p.className='page bw bw-cinema';document.body.appendChild(p)}
- p.className='page bw bw-cinema';
+ const wasActive=!!(p&&p.classList.contains('active'));
+ if(!p){p=document.createElement('section');p.id='beaumontTheatre';document.body.appendChild(p)}
+ p.className='page bw bw-cinema'+(wasActive?' active':'');
+ if(p.dataset.theatreBuilt==='1')return;
+ p.dataset.theatreBuilt='1';
  p.innerHTML=`<div class="bw-nav"><div class="bw-logo">BEAUMONT THEATRE<small>LIVE PERFORMANCE • HOLLOW'S CREEK</small></div><button class="back" onclick="showPage('businesses')">Businesses ↗</button></div><div class="bw-hero"><div class="bw-copy"><div class="bw-kicker">BEAUMONT THEATRE • MELISSA & BECCA BEAUMONT</div><h1>Where Hollow's Creek takes the stage.</h1><p>A prestigious Beaumont performance venue created and owned together by sisters Melissa and Becca Beaumont, presenting plays, musicals, premieres, gala nights and special events.</p><button class="bw-btn" onclick="showPage('businesses')">BACK TO BUSINESSES</button></div><div class="bw-photo" style="background-image:linear-gradient(90deg,#101014 0,transparent 42%),url('Beaumont Theatre.jpg')"></div></div><section class="bw-section"><div class="bw-kicker">THE VENUE</div><h2>Beaumont Theatre</h2><div class="bw-grid"><div class="bw-card"><small>CO-OWNERS</small><h3>Melissa & Becca Beaumont</h3><p>The sisters created and own Beaumont Theatre together, combining Melissa's performance and film-industry experience with Becca's business and entertainment ventures.</p></div><div class="bw-card"><small>LIVE PERFORMANCE</small><h3>Main Auditorium</h3><p>Professional theatre for plays, musicals, touring productions and headline performances.</p></div><div class="bw-card"><small>FILM & INDUSTRY</small><h3>Premieres & Galas</h3><p>Red-carpet premieres, press nights, charity galas and special Beaumont events.</p></div><div class="bw-card"><small>BACKSTAGE</small><h3>Production Facilities</h3><p>Dressing rooms, rehearsal rooms, stage management, wardrobe, technical spaces and performer facilities.</p></div></div></section><div class="bw-footer"><span>© 1995 BEAUMONT THEATRE</span><span>HOLLOW'S CREEK • BOX OFFICE • EVENTS</span></div>`;
 }
 function theatreBusinessCard(){
