@@ -1,0 +1,62 @@
+name: Connect Reid family in tree
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-tree:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add Reid family connections
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('family-tree/index.html')
+          t=p.read_text(encoding='utf-8')
+
+          # Add Reid colour/filter if missing.
+          t=t.replace('--other:#b7a7b5}', '--reid:#cf8fb0;--other:#b7a7b5}', 1)
+          t=t.replace('.node[data-family="Whitmore"]{border-left-color:var(--whitmore)}', '.node[data-family="Whitmore"]{border-left-color:var(--whitmore)}.node[data-family="Reid"]{border-left-color:var(--reid)}', 1)
+          if 'data-family="Reid"' not in t:
+              t=t.replace('<button class="chip" data-family="Whitmore">Whitmore</button>', '<button class="chip" data-family="Whitmore">Whitmore</button><button class="chip" data-family="Reid">Reid</button>', 1)
+          if '> Reid</div>' not in t:
+              t=t.replace('<div class="legend-row"><span class="dot" style="background:var(--whitmore)"></span> Whitmore</div>', '<div class="legend-row"><span class="dot" style="background:var(--whitmore)"></span> Whitmore</div><div class="legend-row"><span class="dot" style="background:var(--reid)"></span> Reid</div>', 1)
+
+          # Make Joanne and Christina part of the Reid family.
+          t=t.replace("{id:'joanne',name:'Joanne Rose Reid',family:'Other'", "{id:'joanne',name:'Joanne Rose Reid',family:'Reid'", 1)
+          t=t.replace("{id:'christina',name:'Christina Reid',family:'Holt'", "{id:'christina',name:'Christina Reid',family:'Reid'", 1)
+
+          # Add their parents + brothers once, using canon already in the site.
+          if "id:'michaelReid'" not in t:
+              anchor="{id:'jewel',name:'Jewel Lewandowski'"
+              insert=("{id:'michaelReid',name:'Michael Reid',family:'Reid',x:40,y:500,meta:'Reid family • father',partners:['emilyReid'],children:['ethanReid','marcusReid','joanne','christina']},"
+                      "{id:'emilyReid',name:'Emily Reid (née Thompson)',family:'Reid',x:250,y:500,meta:'Reid family • mother',partners:['michaelReid'],children:['ethanReid','marcusReid','joanne','christina']},"
+                      "{id:'ethanReid',name:'Ethan Reid',family:'Reid',x:40,y:700,meta:'Brother of Joanne & Christina'},"
+                      "{id:'marcusReid',name:'Marcus Reid',family:'Reid',x:230,y:700,meta:'Brother of Joanne & Christina'},")
+              t=t.replace(anchor, insert+anchor, 1)
+
+          # Add parent-child links so Joanne and Christina visibly share parents.
+          if "['michaelReid','joanne']" not in t:
+              anchor="const parentChild=["
+              links=("['michaelReid','ethanReid'],['emilyReid','ethanReid'],"
+                     "['michaelReid','marcusReid'],['emilyReid','marcusReid'],"
+                     "['michaelReid','joanne'],['emilyReid','joanne'],"
+                     "['michaelReid','christina'],['emilyReid','christina'],")
+              t=t.replace(anchor, anchor+links, 1)
+
+          p.write_text(t,encoding='utf-8')
+          PY
+      - name: Commit tree update
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add family-tree/index.html
+          git commit -m "Connect Joanne and Christina through Reid family"
+          git push
