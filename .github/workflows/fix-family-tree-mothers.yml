@@ -1,0 +1,41 @@
+name: Fix Beaumont mothers in family tree
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch family tree mothers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('family-tree/index.html')
+          t=p.read_text(encoding='utf-8')
+
+          t=t.replace("partners:['jewel','joanne']", "partners:['jewel','joanne','rosa','michelle']")
+
+          joanne="{id:'joanne',name:'Joanne Rose Reid',family:'Other',x:600,y:90,meta:'Mother of Libby, Bethany, Reece, Leon, Bradley & Rebecca',partners:['lukasSr'],children:['libby','bethany','reece','leon','bradley','becca']}"
+          if "id:'rosa'" not in t:
+              t=t.replace(joanne, joanne+",{id:'rosa',name:'Rosa Beaumont',family:'Beaumont',x:820,y:90,meta:'Mother of Melissa, Celia & Henry',partners:['lukasSr'],children:['melissa','celia','henry']},{id:'michelle',name:'Michelle Solis',family:'Other',x:1040,y:90,meta:'Mother of Harper & Riley',partners:['lukasSr'],children:['harper','riley']}")
+
+          old="['lukasSr','bradley'],['joanne','bradley'],['lukasSr','becca'],['joanne','becca'],['lukasSr','harper'],['lukasSr','melissa'],['lukasSr','celia'],['lukasSr','henry'],['lukasSr','riley']"
+          new="['lukasSr','bradley'],['joanne','bradley'],['lukasSr','becca'],['joanne','becca'],['lukasSr','harper'],['michelle','harper'],['lukasSr','melissa'],['rosa','melissa'],['lukasSr','celia'],['rosa','celia'],['lukasSr','henry'],['rosa','henry'],['lukasSr','riley'],['michelle','riley']"
+          t=t.replace(old,new)
+
+          t=t.replace("const marriages = [['lukasSr','jewel'],['lukasSr','joanne']", "const marriages = [['lukasSr','jewel'],['lukasSr','joanne'],['lukasSr','rosa'],['lukasSr','michelle']")
+
+          p.write_text(t,encoding='utf-8')
+          PY
+      - name: Commit update
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add family-tree/index.html
+          git commit -m "Correct Beaumont mothers in family tree"
+          git push
